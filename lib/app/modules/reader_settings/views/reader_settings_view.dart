@@ -107,6 +107,36 @@ class ReaderSettingsView extends GetView<ReaderSettingsController> {
                 controlAffinity: ListTileControlAffinity.trailing,
               ),
             ),
+            Obx(
+              () => SwitchListTile(
+                secondary: Icon(Icons.switch_left_outlined),
+                title: Text(
+                  LocaleKeys
+                      .readerSettingsScreen_readerPrefetchEntireChapterImage.tr,
+                ),
+                value: controller.readerPrefetchEntireChapterImage.value,
+                onChanged: (bool val) async {
+                  await controller.localStorageService
+                      .setReaderPrefetchEntireChapterImage(val);
+                },
+                controlAffinity: ListTileControlAffinity.trailing,
+              ),
+            ),
+            Obx(
+              () => SwitchListTile(
+                secondary: Icon(Icons.switch_left_outlined),
+                title: Text(
+                  LocaleKeys
+                      .readerSettingsScreen_readerPrefetchNextChapterImage.tr,
+                ),
+                value: controller.readerPrefetchNextChapterImage.value,
+                onChanged: (bool val) async {
+                  await controller.localStorageService
+                      .setReaderPrefetchNextChapterImage(val);
+                },
+                controlAffinity: ListTileControlAffinity.trailing,
+              ),
+            ),
             ListTile(
               title: Text(LocaleKeys.readerSettingsScreen_category.tr),
               leading: Icon(Icons.category_outlined),

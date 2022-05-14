@@ -176,7 +176,24 @@ class ReaderController extends GetxController {
 
   Future<void> markAsRead() async {
     Map<String, dynamic> formData = {"read": true, "lastPageRead": "1"};
+    if (localStorageService.readerPrefetchNextChapterImage) {
+      await preloadNextChapter(chapterIndex + 1);
+    }
     await repository.patchChapter(chapter, formData);
+  }
+
+  Future<void> preloadNextChapter(nextChapterIndex) async {
+    var nextChapter = await repository.getChapter(
+        mangaId: mangaId, chapterIndex: nextChapterIndex);
+    if (nextChapter != null) {
+      for (var i = 0; i < nextChapter.pageCount!; i++) {
+        cacheManager.getSingleFile(repository.getChapterPage(
+          mangaId: mangaId,
+          chapterIndex: nextChapterIndex,
+          page: i,
+        ));
+      }
+    }
   }
 
   void prevChapter() {
@@ -215,9 +232,18 @@ class ReaderController extends GetxController {
     isLoading = false;
   }
 
+  Future<void> reloadCache() async {
+    for (var i = 0; i < chapter.pageCount!; i++) {
+      cacheManager.getSingleFile(getChapterPage(i));
+    }
+  }
+
   @override
   void onReady() async {
     await reloadReader();
+    if (localStorageService.readerPrefetchEntireChapterImage) {
+      await reloadCache();
+    }
     super.onReady();
   }
 

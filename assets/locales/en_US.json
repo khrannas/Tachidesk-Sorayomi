@@ -207,7 +207,9 @@
         "category": "Category",
         "readerMode": "Default Reading Mode",
         "readerNavigationLayout": "Default Navigation layout",
-        "readerNavigationLayoutInvert": "Default Invert tapping"
+        "readerNavigationLayoutInvert": "Default Invert tapping",
+        "readerPrefetchEntireChapterImage": "Prefetch chapter image",
+        "readerPrefetchNextChapterImage": "Prefetch next chapter image"
     },
     "screenTitle": {
         "about": "About",

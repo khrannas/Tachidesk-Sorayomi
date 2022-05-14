@@ -14,3 +14,5 @@ const readerNavigationLayoutKey = "flutter_readerNavigationLayout";
 const readerNavigationLayoutInvertKey = "flutter_readerNavigationLayoutInvert";
 const showNsfwKey = "showNSFW";
 const sourceLangKey = "sourceLangKey";
+const readerPrefetchEntireChapterImageKey = "readerPrefetchEntireChapterImage";
+const readerPrefetchNextChapterImageKey = "readerPrefetchNextChapterImage";

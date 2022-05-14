@@ -204,6 +204,10 @@ class LocaleKeys {
       'readerSettingsScreen_readerNavigationLayout';
   static const readerSettingsScreen_readerNavigationLayoutInvert =
       'readerSettingsScreen_readerNavigationLayoutInvert';
+  static const readerSettingsScreen_readerPrefetchEntireChapterImage =
+      'readerSettingsScreen_readerPrefetchEntireChapterImage';
+  static const readerSettingsScreen_readerPrefetchNextChapterImage =
+      'readerSettingsScreen_readerPrefetchNextChapterImage';
   static const screenTitle_about = 'screenTitle_about';
   static const screenTitle_browse = 'screenTitle_browse';
   static const screenTitle_categories = 'screenTitle_categories';
@@ -399,6 +403,10 @@ class Locales {
     'readerSettingsScreen_readerNavigationLayout': 'Default Navigation layout',
     'readerSettingsScreen_readerNavigationLayoutInvert':
         'Default Invert tapping',
+    'readerSettingsScreen_readerPrefetchEntireChapterImage':
+        'Prefetch chapter image',
+    'readerSettingsScreen_readerPrefetchNextChapterImage':
+        'Prefetch next chapter image',
     'screenTitle_about': 'About',
     'screenTitle_browse': 'Browse',
     'screenTitle_categories': 'Categories',

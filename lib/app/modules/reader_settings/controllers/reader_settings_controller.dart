@@ -13,12 +13,18 @@ class ReaderSettingsController extends GetxController {
   final Rx<ReaderNavigationLayout> readerNavigationLayout =
       ReaderNavigationLayout.disabled.obs;
   final RxBool readerNavigationLayoutInvert = false.obs;
+  final RxBool readerPrefetchEntireChapterImage = false.obs;
+  final RxBool readerPrefetchNextChapterImage = false.obs;
   @override
   void onInit() {
     readerMode.value = localStorageService.readerMode;
     readerNavigationLayout.value = localStorageService.readerNavigationLayout;
     readerNavigationLayoutInvert.value =
         localStorageService.readerNavigationLayoutInvert;
+    readerPrefetchEntireChapterImage.value =
+        localStorageService.readerPrefetchEntireChapterImage;
+    readerPrefetchNextChapterImage.value =
+        localStorageService.readerPrefetchNextChapterImage;
     localStorageService.box.listenKey(
       readerModeKey,
       (value) => readerMode.value = readerModeFromString(value),
@@ -31,6 +37,14 @@ class ReaderSettingsController extends GetxController {
     localStorageService.box.listenKey(
       readerNavigationLayoutInvertKey,
       (value) => readerNavigationLayoutInvert.value = value,
+    );
+    localStorageService.box.listenKey(
+      readerPrefetchEntireChapterImageKey,
+      (value) => readerPrefetchEntireChapterImage.value = value,
+    );
+    localStorageService.box.listenKey(
+      readerPrefetchNextChapterImageKey,
+      (value) => readerPrefetchNextChapterImage.value = value,
     );
     super.onInit();
   }

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:cached_network_image_platform_interface/cached_network_image_platform_interface.dart';
 import 'package:get/get.dart';
 import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
 
@@ -120,6 +121,7 @@ class Webtoon extends StatelessWidget {
                   imageUrl: controller.getChapterPage(index),
                   httpHeaders: headers,
                   filterQuality: FilterQuality.medium,
+                  imageRenderMethodForWeb: ImageRenderMethodForWeb.HttpGet,
                   progressIndicatorBuilder: (context, url, downloadProgress) =>
                       SizedBox(
                     height: context.height * .7,

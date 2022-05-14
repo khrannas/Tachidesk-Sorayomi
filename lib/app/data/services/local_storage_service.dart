@@ -181,4 +181,13 @@ class LocalStorageService extends GetxService {
   String get basicAuth => 'Basic ${base64.encode(
         utf8.encode('$authUserName:$authPassword'),
       )}';
+
+  bool get readerPrefetchEntireChapterImage =>
+      box.read(readerPrefetchEntireChapterImageKey) ?? false;
+  Future<void> setReaderPrefetchEntireChapterImage(bool value) =>
+      box.write(readerPrefetchEntireChapterImageKey, value);
+  bool get readerPrefetchNextChapterImage =>
+      box.read(readerPrefetchNextChapterImageKey) ?? false;
+  Future<void> setReaderPrefetchNextChapterImage(bool value) =>
+      box.write(readerPrefetchNextChapterImageKey, value);
 }
