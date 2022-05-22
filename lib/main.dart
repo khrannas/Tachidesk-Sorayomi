@@ -25,7 +25,7 @@ void main() async {
           color: ColorScheme.light().primary,
         ),
         useMaterial3: true,
-        fontFamily: 'Roboto',
+        fontFamily: 'OpenSans',
       ),
       darkTheme: ThemeData(
         colorScheme: ColorScheme.dark(),
@@ -33,7 +33,7 @@ void main() async {
           color: ColorScheme.dark().primary,
         ),
         useMaterial3: true,
-        fontFamily: 'Roboto',
+        fontFamily: 'OpenSans',
       ),
       themeMode: controller.theme,
       debugShowCheckedModeBanner: false,

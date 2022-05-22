@@ -176,9 +176,6 @@ class ReaderController extends GetxController {
 
   Future<void> markAsRead() async {
     Map<String, dynamic> formData = {"read": true, "lastPageRead": "1"};
-    if (localStorageService.readerPrefetchNextChapterImage) {
-      await preloadNextChapter(chapterIndex + 1);
-    }
     await repository.patchChapter(chapter, formData);
   }
 
@@ -209,6 +206,9 @@ class ReaderController extends GetxController {
       chapterIndex: chapterIndex,
     );
     if (tempChapter != null) chapter = tempChapter;
+    if (localStorageService.readerPrefetchNextChapterImage) {
+      preloadNextChapter(chapterIndex + 1);
+    }
   }
 
   Future<void> reloadReader() async {
