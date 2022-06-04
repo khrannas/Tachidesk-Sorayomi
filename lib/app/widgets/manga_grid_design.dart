@@ -51,7 +51,34 @@ class MangaGridDesign extends StatelessWidget {
                         ),
                       ],
                     )
-                  : null
+                  : Row(
+                      children: [
+                        (manga.numOfChapter ?? 0) != 0
+                            ? Card(
+                                margin: EdgeInsets.zero,
+                                color: Get.theme.colorScheme.tertiary,
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.horizontal(
+                                    right: Radius.circular(5),
+                                    left: Radius.circular(5),
+                                  ),
+                                ),
+                                child: Padding(
+                                  padding: const EdgeInsets.symmetric(
+                                    vertical: 2.0,
+                                    horizontal: 4.0,
+                                  ),
+                                  child: Text(
+                                    "${manga.numOfChapter}",
+                                    style: TextStyle(
+                                      color: Get.theme.colorScheme.onPrimary,
+                                    ),
+                                  ),
+                                ),
+                              )
+                            : Container(),
+                      ],
+                    )
               : Padding(
                   padding: const EdgeInsets.all(4.0),
                   child: Row(mainAxisSize: MainAxisSize.min, children: [
@@ -176,6 +203,7 @@ class MangaGridDesign extends StatelessWidget {
             title: Text(
               (manga.title ?? manga.author ?? ""),
               overflow: TextOverflow.ellipsis,
+              maxLines: 4,
             ),
           ),
         ),

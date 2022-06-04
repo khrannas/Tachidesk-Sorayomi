@@ -194,7 +194,7 @@ class SourceMangaView extends GetView<SourceMangaController> {
           ),
         ),
         gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
-          maxCrossAxisExtent: 205,
+          maxCrossAxisExtent: 150,
           crossAxisSpacing: 2.0,
           mainAxisSpacing: 2.0,
           childAspectRatio: 0.7,

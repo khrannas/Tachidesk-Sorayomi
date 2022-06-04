@@ -22,6 +22,7 @@ class Manga {
   String? thumbnailUrl;
   String? title;
   int? unreadCount;
+  int? numOfChapter;
   String? url;
   Map<String, dynamic>? meta;
   Manga({
@@ -42,6 +43,7 @@ class Manga {
     this.thumbnailUrl,
     this.title,
     this.unreadCount,
+    this.numOfChapter,
     this.url,
     this.meta,
   });
@@ -64,6 +66,7 @@ class Manga {
     String? thumbnailUrl,
     String? title,
     int? unreadCount,
+    int? numOfChapter,
     String? url,
     Map<String, dynamic>? meta,
   }) {
@@ -85,6 +88,7 @@ class Manga {
       thumbnailUrl: thumbnailUrl ?? this.thumbnailUrl,
       title: title ?? this.title,
       unreadCount: unreadCount ?? this.unreadCount,
+      numOfChapter: numOfChapter ?? this.numOfChapter,
       url: url ?? this.url,
       meta: meta ?? this.meta,
     );
@@ -109,6 +113,7 @@ class Manga {
       'thumbnailUrl': thumbnailUrl,
       'title': title,
       'unreadCount': unreadCount,
+      'numOfChapter': numOfChapter,
       'url': url,
       'meta': meta,
     };
@@ -133,6 +138,7 @@ class Manga {
       thumbnailUrl: map['thumbnailUrl'],
       title: map['title'],
       unreadCount: map['unreadCount']?.toInt(),
+      numOfChapter: map['numOfChapter']?.toInt(),
       url: map['url'],
       meta: map['meta'],
     );
@@ -149,7 +155,7 @@ class Manga {
         ' id: $id, inLibrary: $inLibrary, inLibraryAt: $inLibraryAt,'
         ' initialized: $initialized, realUrl: $realUrl, source: $source,'
         ' sourceId: $sourceId, status: $status, thumbnailUrl: $thumbnailUrl,'
-        ' title: $title, unreadCount: $unreadCount, url: $url, meta: $meta)';
+        ' title: $title, unreadCount: $unreadCount, numOfChapter: $numOfChapter, url: $url, meta: $meta)';
   }
 
   @override
