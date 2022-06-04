@@ -15,23 +15,23 @@ class SourceMangaRepository {
       required int pageNum,
       required SourceType sourceType,
       bool isFilter = false}) async {
-    if (sourceType.name == 'latest') {
-      var data = await _sourceProvider.getSourceMangaList(
-        sourceId: sourceId,
-        pageNum: pageNum,
-        sourceType: sourceType,
-        isFilter: isFilter,
-      );
-      if (data != null && data.mangaList != null) {
-        for (var manga in data.mangaList!) {
-          var chapters = await _chapterProvider.getChaptersList(manga.id!);
-          if (chapters != null && chapters.isNotEmpty) {
-            manga.numOfChapter = chapters[0].chapterCount!;
-          }
-        }
-      }
-      return data;
-    }
+    // if (sourceType.name == 'latest') {
+    //   var data = await _sourceProvider.getSourceMangaList(
+    //     sourceId: sourceId,
+    //     pageNum: pageNum,
+    //     sourceType: sourceType,
+    //     isFilter: isFilter,
+    //   );
+    //   if (data != null && data.mangaList != null) {
+    //     for (var manga in data.mangaList!) {
+    //       var chapters = await _chapterProvider.getChaptersList(manga.id!);
+    //       if (chapters != null && chapters.isNotEmpty) {
+    //         manga.numOfChapter = chapters[0].chapterCount!;
+    //       }
+    //     }
+    //   }
+    //   return data;
+    // }
     return _sourceProvider.getSourceMangaList(
       sourceId: sourceId,
       pageNum: pageNum,
