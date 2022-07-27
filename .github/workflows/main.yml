@@ -21,7 +21,7 @@ jobs:
      run: flutter pub get
      
    - name: Build Flutter
-     run: flutter build ipa --export-method ad-hoc
+     run: flutter build ipa --no-codesign --export-method ad-hoc
      
    - name: Publish iOS Artefacts
      uses: actions/upload-artifact@v1
