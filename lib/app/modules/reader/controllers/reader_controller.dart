@@ -179,14 +179,14 @@ class ReaderController extends GetxController {
     await repository.patchChapter(chapter, formData);
   }
 
-  Future<void> preloadNextChapter(nextChapterIndex) async {
+  Future<void> preloadChapter(chapterIndex) async {
     var nextChapter = await repository.getChapter(
-        mangaId: mangaId, chapterIndex: nextChapterIndex);
+        mangaId: mangaId, chapterIndex: chapterIndex);
     if (nextChapter != null) {
       for (var i = 0; i < nextChapter.pageCount!; i++) {
         cacheManager.getSingleFile(repository.getChapterPage(
           mangaId: mangaId,
-          chapterIndex: nextChapterIndex,
+          chapterIndex: chapterIndex,
           page: i,
         ));
       }
