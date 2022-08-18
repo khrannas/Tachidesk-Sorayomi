@@ -1,6 +1,7 @@
 import 'dart:math';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart';
 
 import 'package:get/get.dart';
 
@@ -12,6 +13,9 @@ import '../controllers/browse_controller.dart';
 class BrowseAppBarActions extends StatelessWidget {
   BrowseAppBarActions({Key? key}) : super(key: key);
   final BrowseController controller = Get.find<BrowseController>();
+  final isWebMobile = kIsWeb &&
+      (defaultTargetPlatform == TargetPlatform.iOS ||
+          defaultTargetPlatform == TargetPlatform.android);
   @override
   Widget build(BuildContext context) {
     return Obx(() => Row(
@@ -24,7 +28,7 @@ class BrowseAppBarActions extends StatelessWidget {
                         width: min(context.width * .5, 300),
                         child: TextField(
                           controller: controller.textEditingController,
-                          autofocus: true,
+                          autofocus: !isWebMobile,
                           onEditingComplete: () {
                             if (controller.textEditingController.text.isEmpty) {
                               return;
@@ -80,7 +84,7 @@ class BrowseAppBarActions extends StatelessWidget {
                         width: min(context.width * .5, 300),
                         child: TextField(
                           controller: controller.textEditingController,
-                          autofocus: true,
+                          autofocus: !isWebMobile,
                           decoration: InputDecoration(
                             suffixIcon: IconButton(
                               icon: Icon(

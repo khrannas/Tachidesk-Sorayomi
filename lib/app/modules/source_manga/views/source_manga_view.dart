@@ -1,6 +1,7 @@
 import 'dart:math';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart';
 
 import 'package:get/get.dart';
 import 'package:infinite_scroll_pagination/infinite_scroll_pagination.dart';
@@ -15,6 +16,10 @@ import '../controllers/source_manga_controller.dart';
 import '../widgets/source_manga_filter_item.dart';
 
 class SourceMangaView extends GetView<SourceMangaController> {
+  final isWebMobile = kIsWeb &&
+      (defaultTargetPlatform == TargetPlatform.iOS ||
+          defaultTargetPlatform == TargetPlatform.android);
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -41,7 +46,7 @@ class SourceMangaView extends GetView<SourceMangaController> {
                     width: min(context.width * .5, 300),
                     child: TextField(
                       controller: controller.textEditingController,
-                      autofocus: true,
+                      autofocus: !isWebMobile,
                       onEditingComplete: () {
                         if (controller.textEditingController.text.isEmpty) {
                           return;

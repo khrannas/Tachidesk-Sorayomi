@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter/foundation.dart';
 
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:get/get.dart';
@@ -21,6 +22,9 @@ class ContinuousHorizontalRTL extends StatelessWidget {
   final ItemScrollController itemScrollController = ItemScrollController();
   final ItemPositionsListener itemPositionsListener =
       ItemPositionsListener.create();
+  final isWebMobile = kIsWeb &&
+      (defaultTargetPlatform == TargetPlatform.iOS ||
+          defaultTargetPlatform == TargetPlatform.android);
 
   void initListeners() {
     itemPositionsListener.itemPositions.addListener(() {
@@ -84,7 +88,7 @@ class ContinuousHorizontalRTL extends StatelessWidget {
           ),
         },
         child: Focus(
-          autofocus: true,
+          autofocus: !isWebMobile,
           child: ScrollablePositionedList.builder(
             itemScrollController: itemScrollController,
             itemPositionsListener: itemPositionsListener,

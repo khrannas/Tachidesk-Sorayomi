@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter/foundation.dart';
 
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:get/get.dart';
@@ -15,6 +16,9 @@ class SingleHorizontalLTR extends StatelessWidget {
     Key? key,
     required this.controller,
   }) : super(key: key);
+  final isWebMobile = kIsWeb &&
+      (defaultTargetPlatform == TargetPlatform.iOS ||
+          defaultTargetPlatform == TargetPlatform.android);
 
   final ReaderController controller;
   final PageController pageController = PageController();
@@ -62,7 +66,7 @@ class SingleHorizontalLTR extends StatelessWidget {
           ),
         },
         child: Focus(
-          autofocus: true,
+          autofocus: !isWebMobile,
           child: PageView.builder(
             controller: pageController,
             itemCount: controller.chapter.pageCount,

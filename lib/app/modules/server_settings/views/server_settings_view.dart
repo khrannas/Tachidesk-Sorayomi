@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter/foundation.dart';
 
 import 'package:get/get.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -9,6 +10,10 @@ import '../../../data/enums/auth_type.dart';
 import '../controllers/server_settings_controller.dart';
 
 class ServerSettingsView extends GetView<ServerSettingsController> {
+  final isWebMobile = kIsWeb &&
+      (defaultTargetPlatform == TargetPlatform.iOS ||
+          defaultTargetPlatform == TargetPlatform.android);
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -24,7 +29,7 @@ class ServerSettingsView extends GetView<ServerSettingsController> {
               Get.defaultDialog(
                 title: LocaleKeys.serverSettingsScreen_url.tr,
                 content: TextField(
-                  autofocus: true,
+                  autofocus: !isWebMobile,
                   controller: controller.baseUrlEditingController,
                   onSubmitted: (value) => controller.submitURL(value),
                   decoration: InputDecoration(
@@ -65,7 +70,7 @@ class ServerSettingsView extends GetView<ServerSettingsController> {
                             Padding(
                               padding: const EdgeInsets.all(8.0),
                               child: TextField(
-                                autofocus: true,
+                                autofocus: !isWebMobile,
                                 controller:
                                     controller.userNameEditingController,
                                 decoration: InputDecoration(
@@ -78,7 +83,7 @@ class ServerSettingsView extends GetView<ServerSettingsController> {
                             Padding(
                               padding: const EdgeInsets.all(8.0),
                               child: TextField(
-                                autofocus: true,
+                                autofocus: !isWebMobile,
                                 controller:
                                     controller.passwordEditingController,
                                 obscureText: true,

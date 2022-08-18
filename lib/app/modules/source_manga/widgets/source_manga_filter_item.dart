@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart';
 
 import 'package:get/get.dart';
 
@@ -14,6 +15,7 @@ class SourceMangaFilterItem extends StatelessWidget {
   final SourceMangaController controller;
   final int index;
   final int? groupIndex;
+
   @override
   Widget build(BuildContext context) {
     return Obx(() {
@@ -94,11 +96,14 @@ class SourceMangaFilterItem extends StatelessWidget {
           );
 
         case "Text":
+          final isWebMobile = kIsWeb &&
+              (defaultTargetPlatform == TargetPlatform.iOS ||
+                  defaultTargetPlatform == TargetPlatform.android);
           return Padding(
             padding: const EdgeInsets.symmetric(vertical: 4, horizontal: 16),
             child: TextFormField(
               initialValue: item["filter"]["state"],
-              autofocus: true,
+              autofocus: !isWebMobile,
               decoration: InputDecoration(
                 border: OutlineInputBorder(),
                 labelText: item["filter"]["name"],

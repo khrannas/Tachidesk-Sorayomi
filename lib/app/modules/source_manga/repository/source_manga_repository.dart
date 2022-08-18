@@ -3,12 +3,12 @@ import 'package:get/get.dart';
 import '../../../data/enums/source_type.dart';
 import '../../../data/manga_list_model.dart';
 import '../../../data/providers/source_provider.dart';
-import '../../../data/providers/chapter_provider.dart';
+// import '../../../data/providers/chapter_provider.dart';
 import '../../../data/source_model.dart';
 
 class SourceMangaRepository {
   final SourceProvider _sourceProvider = Get.put(SourceProvider());
-  final ChapterProvider _chapterProvider = Get.put(ChapterProvider());
+  // final ChapterProvider _chapterProvider = Get.put(ChapterProvider());
 
   Future<MangaListModel?> getSourceMangaList(
       {required String sourceId,

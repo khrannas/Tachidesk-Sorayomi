@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter/foundation.dart';
 
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cached_network_image_platform_interface/cached_network_image_platform_interface.dart';
@@ -17,6 +18,9 @@ class Webtoon extends StatelessWidget {
     Key? key,
     required this.controller,
   }) : super(key: key);
+  final isWebMobile = kIsWeb &&
+      (defaultTargetPlatform == TargetPlatform.iOS ||
+          defaultTargetPlatform == TargetPlatform.android);
 
   final ReaderController controller;
   final ItemScrollController itemScrollController = ItemScrollController();
@@ -85,7 +89,7 @@ class Webtoon extends StatelessWidget {
           ),
         },
         child: Focus(
-          autofocus: true,
+          autofocus: !isWebMobile,
           child: ScrollablePositionedList.builder(
             itemScrollController: itemScrollController,
             itemPositionsListener: itemPositionsListener,

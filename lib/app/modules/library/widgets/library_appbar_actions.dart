@@ -1,6 +1,7 @@
 import 'dart:math';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart';
 
 import 'package:get/get.dart';
 
@@ -12,6 +13,9 @@ import 'library_sort_list_view.dart';
 class LibraryAppBarActions extends StatelessWidget {
   LibraryAppBarActions({Key? key}) : super(key: key);
   final LibraryController controller = Get.find<LibraryController>();
+  final isWebMobile = kIsWeb &&
+      (defaultTargetPlatform == TargetPlatform.iOS ||
+          defaultTargetPlatform == TargetPlatform.android);
   @override
   Widget build(BuildContext context) {
     return Obx(() => Row(
@@ -23,7 +27,7 @@ class LibraryAppBarActions extends StatelessWidget {
                     width: min(context.width * .5, 300),
                     child: TextField(
                       controller: controller.textEditingController,
-                      autofocus: true,
+                      autofocus: !isWebMobile,
                       decoration: InputDecoration(
                         suffixIcon: IconButton(
                           icon: Icon(

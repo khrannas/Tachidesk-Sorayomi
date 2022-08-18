@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter/foundation.dart';
 
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:get/get.dart';
@@ -12,6 +13,9 @@ import '../../controllers/reader_controller.dart';
 import '../reader_page/reader_page_bottom_sheet.dart';
 
 class ContinuousHorizontalLTR extends StatelessWidget {
+  final isWebMobile = kIsWeb &&
+      (defaultTargetPlatform == TargetPlatform.iOS ||
+          defaultTargetPlatform == TargetPlatform.android);
   ContinuousHorizontalLTR.asFunction({
     Key? key,
     required this.controller,
@@ -85,7 +89,7 @@ class ContinuousHorizontalLTR extends StatelessWidget {
           ),
         },
         child: Focus(
-          autofocus: true,
+          autofocus: !isWebMobile,
           child: ScrollablePositionedList.builder(
             itemScrollController: itemScrollController,
             itemPositionsListener: itemPositionsListener,

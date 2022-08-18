@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart';
 
 import 'package:get/get.dart';
 
@@ -14,14 +15,18 @@ class SearchTextField extends StatelessWidget {
 
   final SearchSourceController controller;
   final double? width;
+
   @override
   Widget build(BuildContext context) {
+    final isWebMobile = kIsWeb &&
+        (defaultTargetPlatform == TargetPlatform.iOS ||
+            defaultTargetPlatform == TargetPlatform.android);
     return Container(
       padding: EdgeInsets.all(8.0),
       width: width,
       child: TextField(
         controller: controller.textEditingController,
-        autofocus: true,
+        autofocus: !isWebMobile,
         onEditingComplete: () => controller.pagingController.refresh(),
         decoration: InputDecoration(
           suffixIcon: IconButton(

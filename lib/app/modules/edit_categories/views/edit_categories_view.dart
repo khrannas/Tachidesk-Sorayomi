@@ -1,5 +1,6 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart' as foundation;
 
 import 'package:get/get.dart';
 
@@ -10,6 +11,9 @@ import '../../../widgets/emoticons.dart';
 import '../controllers/edit_categories_controller.dart';
 
 class EditCategoriesView extends GetView<EditCategoriesController> {
+  final isWebMobile = foundation.kIsWeb &&
+      (foundation.defaultTargetPlatform == TargetPlatform.iOS ||
+          foundation.defaultTargetPlatform == TargetPlatform.android);
   Future<void> categoryDialog(BuildContext context,
       {Category? category}) async {
     if (category != null) {
@@ -26,7 +30,7 @@ class EditCategoriesView extends GetView<EditCategoriesController> {
           mainAxisSize: MainAxisSize.min,
           children: [
             TextField(
-              autofocus: true,
+              autofocus: !isWebMobile,
               decoration: InputDecoration(
                 border: OutlineInputBorder(),
                 hintText: (LocaleKeys.screenTitle_categories.tr),
