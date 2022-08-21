@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import 'package:get/get.dart';
+import 'package:tachidesk_sorayomi/app/widgets/enhanced_controller.dart';
 
 import '../../../../generated/locales.g.dart';
 import '../../../data/category_model.dart';
@@ -274,7 +275,7 @@ class MangaView extends GetView<MangaController> {
                         Expanded(
                           child: Obx(
                             () => SingleChildScrollView(
-                              controller: ScrollController(),
+                              controller: EnhancedScrollController(),
                               child: MangaDescription(
                                 manga: controller.manga.value,
                                 addMangaToLibrary: controller.addMangaToLibrary,

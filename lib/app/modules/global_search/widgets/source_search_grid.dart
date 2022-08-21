@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import 'package:get/get.dart';
+import 'package:tachidesk_sorayomi/app/widgets/enhanced_controller.dart';
 
 import '../../../data/manga_list_model.dart';
 import '../../../data/source_model.dart';
@@ -18,7 +19,7 @@ class SourceSearchGrid extends StatelessWidget {
   final Source source;
   final String query;
   final GlobalSearchRepository repository;
-  final ScrollController controller = ScrollController();
+  final ScrollController controller = EnhancedScrollController();
 
   final RxBool _isLoading = false.obs;
 

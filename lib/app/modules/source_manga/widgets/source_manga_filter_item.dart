@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart';
 
 import 'package:get/get.dart';
+import 'package:tachidesk_sorayomi/app/widgets/enhanced_controller.dart';
 
 import '../controllers/source_manga_controller.dart';
 
@@ -133,7 +134,7 @@ class SourceMangaFilterItem extends StatelessWidget {
                           title: Text(item["filter"]["name"]),
                         )),
                     body: ListView.builder(
-                      controller: ScrollController(),
+                      controller: EnhancedScrollController(),
                       itemCount: item["filter"]["state"].length,
                       shrinkWrap: true,
                       itemBuilder: (BuildContext context, int index) {
@@ -166,7 +167,7 @@ class SourceMangaFilterItem extends StatelessWidget {
                           title: Text(item["filter"]["name"]),
                         )),
                     body: ListView.builder(
-                      controller: ScrollController(),
+                      controller: EnhancedScrollController(),
                       itemCount: item["filter"]["values"].length,
                       shrinkWrap: true,
                       itemBuilder: (BuildContext context, int index) {

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import 'package:get/get.dart';
+import 'package:tachidesk_sorayomi/app/widgets/enhanced_controller.dart';
 
 import '../../../core/utils/manga/apply_manga_filter.dart';
 import '../../../core/utils/manga/apply_manga_sort.dart';
@@ -19,7 +20,7 @@ class LibraryController extends GetxController
   late TabController tabController;
   final LocalStorageService _localStorageService =
       Get.find<LocalStorageService>();
-  final ScrollController scrollController = ScrollController();
+  final ScrollController scrollController = EnhancedScrollController();
 
   final RxMap<MangaFilter, bool?> _mangaFilter = <MangaFilter, bool?>{
     for (var element in MangaFilter.values) element: null

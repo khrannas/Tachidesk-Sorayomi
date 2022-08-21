@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import 'package:get/get.dart';
+import 'package:tachidesk_sorayomi/app/widgets/enhanced_controller.dart';
 
 import '../../../../generated/locales.g.dart';
 import '../../browse/views/browse_view.dart';
@@ -50,7 +51,7 @@ class HomeView extends GetView<HomeController> {
           context.width > 700.0
               ? context.height < 500
                   ? SingleChildScrollView(
-                      controller: ScrollController(),
+                      controller: EnhancedScrollController(),
                       child: ConstrainedBox(
                         constraints: BoxConstraints(maxHeight: 500),
                         child: BigScreenNavigationBar(
