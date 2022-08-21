@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import 'package:get/get.dart';
 import 'package:infinite_scroll_pagination/infinite_scroll_pagination.dart';
+import 'package:tachidesk_sorayomi/app/widgets/enhanced_controller.dart';
 
 import '../../../data/enums/source_type.dart';
 import '../../../data/manga_list_model.dart';
@@ -15,7 +16,7 @@ class SourceMangaController extends GetxController {
   final PagingController<int, Manga> pagingController =
       PagingController(firstPageKey: 1);
   final TextEditingController textEditingController = TextEditingController();
-  final ScrollController scrollController = ScrollController();
+  final ScrollController scrollController = EnhancedScrollController();
 
   final SourceMangaRepository repository = SourceMangaRepository();
 

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import 'package:get/get.dart';
 import 'package:infinite_scroll_pagination/infinite_scroll_pagination.dart';
+import 'package:tachidesk_sorayomi/app/widgets/enhanced_controller.dart';
 
 import '../../../data/manga_list_model.dart';
 import '../../../data/manga_model.dart';
@@ -15,7 +16,7 @@ class SearchSourceController extends GetxController {
   final SearchSourceRepository repository = SearchSourceRepository();
 
   late String sourceId;
-  final ScrollController scrollController = ScrollController();
+  final ScrollController scrollController = EnhancedScrollController();
   final TextEditingController textEditingController = TextEditingController();
   final Rx<Source> _source = Source().obs;
 

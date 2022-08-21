@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import 'package:get/get.dart';
+import 'package:tachidesk_sorayomi/app/widgets/enhanced_controller.dart';
 
 import '../../../data/chapter_model.dart';
 import '../../../data/services/local_storage_service.dart';
@@ -11,7 +12,7 @@ import '../repository/updates_repository.dart';
 class UpdatesController extends GetxController {
   final UpdatesRepository repository = UpdatesRepository();
   int _page = 0;
-  final ScrollController scrollController = ScrollController();
+  final ScrollController scrollController = EnhancedScrollController();
   final LocalStorageService localStorageService =
       Get.find<LocalStorageService>();
 

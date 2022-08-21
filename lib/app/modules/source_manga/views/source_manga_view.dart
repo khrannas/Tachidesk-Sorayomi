@@ -5,6 +5,7 @@ import 'package:flutter/foundation.dart';
 
 import 'package:get/get.dart';
 import 'package:infinite_scroll_pagination/infinite_scroll_pagination.dart';
+import 'package:tachidesk_sorayomi/app/widgets/enhanced_controller.dart';
 
 import '../../../../generated/locales.g.dart';
 import '../../../data/enums/source_type.dart';
@@ -124,7 +125,7 @@ class SourceMangaView extends GetView<SourceMangaController> {
           ),
           body: Obx(
             () => ListView.builder(
-              controller: ScrollController(),
+              controller: EnhancedScrollController(),
               itemCount: controller.sourceMangaFilterList.length,
               itemBuilder: (BuildContext context, int index) {
                 return SourceMangaFilterItem(
