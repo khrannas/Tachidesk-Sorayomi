@@ -5,13 +5,15 @@ import 'package:flutter/rendering.dart';
 import 'package:flutter/widgets.dart';
 
 class EnhancedScrollController extends ScrollController {
-  ScrollController() {
+  EnhancedScrollController([int extraScrollSpeed = 80]) {
     if (Platform.isWindows) {
       addListener(() {
         ScrollDirection scrollDirection = position.userScrollDirection;
         if (scrollDirection != ScrollDirection.idle) {
-          double scrollEnd =
-              offset + (scrollDirection == ScrollDirection.reverse ? 80 : -80);
+          double scrollEnd = offset +
+              (scrollDirection == ScrollDirection.reverse
+                  ? extraScrollSpeed
+                  : -extraScrollSpeed);
           scrollEnd = min(position.maxScrollExtent,
               max(position.minScrollExtent, scrollEnd));
           jumpTo(scrollEnd);
