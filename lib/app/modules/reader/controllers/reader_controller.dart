@@ -207,7 +207,7 @@ class ReaderController extends GetxController {
     );
     if (tempChapter != null) chapter = tempChapter;
     if (localStorageService.readerPrefetchNextChapterImage) {
-      preloadNextChapter(chapterIndex + 1);
+      preloadChapter(chapterIndex + 1);
     }
   }
 
