@@ -393,7 +393,7 @@ packages:
       path: "packages/scrollable_positioned_list"
       ref: HEAD
       resolved-ref: "9a217edfdb5818542b6c9872ecf96ec3568d26d9"
-      url: "git@github.com:khrannas/flutter.widgets.git"
+      url: "https://github.com/khrannas/flutter.widgets.git"
     source: git
     version: "0.3.2"
   sky_engine:
