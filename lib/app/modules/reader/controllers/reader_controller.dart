@@ -132,8 +132,10 @@ class ReaderController extends GetxController {
         "read": true,
       });
     }
-    Get.offNamed(
-        "${Routes.manga}/${chapter.mangaId}/chapter/${chapter.index! + 1}");
+    if ((chapter.index! + 1) < chapter.chapterCount!) {
+      Get.offNamed(
+          "${Routes.manga}/${chapter.mangaId}/chapter/${chapter.index! + 1}");
+    }
   }
 
   void changeReaderMode(ReaderMode? readerMode) async {

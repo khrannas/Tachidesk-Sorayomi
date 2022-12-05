@@ -37,6 +37,7 @@ class SearchTextField extends StatelessWidget {
           ),
           border: OutlineInputBorder(),
           hintText: LocaleKeys.searchManga_searchManga.tr,
+          contentPadding: const EdgeInsets.all(0.0),
         ),
       ),
     );

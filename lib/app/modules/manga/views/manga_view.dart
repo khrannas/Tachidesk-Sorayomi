@@ -308,6 +308,7 @@ class MangaView extends GetView<MangaController> {
                                         ),
                                       )
                                     : ListView.builder(
+                                        controller: EnhancedScrollController(),
                                         itemCount:
                                             controller.chapterList.length + 1,
                                         itemBuilder: (context, index) {
@@ -391,6 +392,7 @@ class MangaView extends GetView<MangaController> {
                                   ],
                                 )
                               : ListView.builder(
+                                  controller: EnhancedScrollController(),
                                   itemCount: controller.chapterList.length + 2,
                                   itemBuilder: (context, index) {
                                     if (index == 0) {

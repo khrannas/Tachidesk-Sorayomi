@@ -35,6 +35,7 @@ class ServerSettingsView extends GetView<ServerSettingsController> {
                   decoration: InputDecoration(
                     border: OutlineInputBorder(),
                     hintText: (LocaleKeys.serverSettingsScreen_url.tr),
+                    contentPadding: const EdgeInsets.all(0.0),
                   ),
                 ),
                 onConfirm: () => controller
@@ -77,6 +78,7 @@ class ServerSettingsView extends GetView<ServerSettingsController> {
                                   border: OutlineInputBorder(),
                                   hintText: (LocaleKeys
                                       .serverSettingsScreen_userName.tr),
+                                  contentPadding: const EdgeInsets.all(0.0),
                                 ),
                               ),
                             ),
@@ -91,6 +93,7 @@ class ServerSettingsView extends GetView<ServerSettingsController> {
                                   border: OutlineInputBorder(),
                                   hintText: (LocaleKeys
                                       .serverSettingsScreen_password.tr),
+                                  contentPadding: const EdgeInsets.all(0.0),
                                 ),
                               ),
                             ),

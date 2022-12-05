@@ -69,6 +69,7 @@ class BrowseAppBarActions extends StatelessWidget {
                             ),
                             border: OutlineInputBorder(),
                             hintText: LocaleKeys.libraryScreen_mangaSearch.tr,
+                            contentPadding: const EdgeInsets.all(0.0),
                           ),
                         ))
                     : IconButton(

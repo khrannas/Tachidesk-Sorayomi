@@ -108,6 +108,7 @@ class SourceMangaFilterItem extends StatelessWidget {
               decoration: InputDecoration(
                 border: OutlineInputBorder(),
                 labelText: item["filter"]["name"],
+                contentPadding: const EdgeInsets.all(0.0),
               ),
               onChanged: (value) {
                 (isInGroup
