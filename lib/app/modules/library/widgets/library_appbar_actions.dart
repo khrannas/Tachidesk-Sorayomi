@@ -40,7 +40,8 @@ class LibraryAppBarActions extends StatelessWidget {
                         ),
                         border: OutlineInputBorder(),
                         hintText: LocaleKeys.libraryScreen_mangaSearch.tr,
-                        contentPadding: const EdgeInsets.all(0.0),
+                        contentPadding:
+                            const EdgeInsets.fromLTRB(8.0, 0.0, 0.0, 0.0),
                       ),
                     ))
                 : IconButton(

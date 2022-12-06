@@ -88,7 +88,7 @@ class SourceMangaView extends GetView<SourceMangaController> {
                         ),
                         border: OutlineInputBorder(),
                         hintText: LocaleKeys.libraryScreen_mangaSearch.tr,
-                        contentPadding: const EdgeInsets.all(0.0),
+                        contentPadding: const EdgeInsets.all(8.0),
                       ),
                     ))
                 : IconButton(
