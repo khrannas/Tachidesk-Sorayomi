@@ -131,8 +131,6 @@ class ReaderController extends GetxController {
         "lastPageRead": chapter.pageCount! - 1,
         "read": true,
       });
-    }
-    if ((chapter.index! + 1) < chapter.chapterCount!) {
       Get.offNamed(
           "${Routes.manga}/${chapter.mangaId}/chapter/${chapter.index! + 1}");
     }

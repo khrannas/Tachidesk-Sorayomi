@@ -110,8 +110,9 @@ class ReaderView extends GetView<ReaderController> {
                             constraints:
                                 BoxConstraints(maxWidth: 700, minHeight: 184),
                             child: BottomAppBar(
-                              color: Colors.red,
-                              elevation: 1,
+                              color: Colors.blue,
+                              shape: CircularNotchedRectangle(),
+                              elevation: 0,
                               child: Padding(
                                 padding: const EdgeInsets.all(20),
                                 child: Column(
