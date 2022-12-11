@@ -5,10 +5,13 @@
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
+import '../../../../constants/endpoints.dart';
 import '../../../../constants/enum.dart';
+import '../../../../features/settings/widgets/server_url_tile/server_url_tile.dart';
 import '../../../../utils/extensions/custom_extensions.dart';
 import '../../../settings/presentation/reader/widgets/reader_mode_tile/reader_mode_tile.dart';
 import '../../data/manga_book_repository.dart';
@@ -72,6 +75,33 @@ class ReaderScreen extends HookConsumerWidget {
           addScaffoldWrapper: true,
           (chapterData) {
             if (chapterData == null) return const SizedBox.shrink();
+
+            //[TODO] add if prefetch next chapter
+            final CacheManager cacheManager = DefaultCacheManager();
+            final nextChapterProvider = chapterProvider(
+              mangaId: "${data.id}",
+              chapterIndex: "${chapterData.index! + 1}",
+            );
+            final nextChapter = ref.read(nextChapterProvider);
+
+            nextChapter.whenData(
+              (value) {
+                print("${value!.id}:${value.pageCount}");
+                for (var i = 0; i < value!.pageCount!; i++) {
+                  final imageUrl = MangaUrl.chapterPageWithIndex(
+                    chapterIndex: "${value.index}",
+                    mangaId: "${data.id}",
+                    pageIndex: "$i",
+                  );
+                  final baseApi =
+                      "${Endpoints.baseApi(baseUrl: ref.watch(serverUrlProvider), appendApiToUrl: true)}"
+                      "$imageUrl/?useCache=true";
+                  final result = cacheManager.getSingleFile(baseApi);
+                  //result.then((value) => print(value.uri));
+                }
+              },
+            );
+
             switch (readerMode) {
               case ReaderMode.singleVertical:
                 return SinglePageReaderMode(
