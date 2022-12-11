@@ -22,66 +22,19 @@ jobs:
      
    - name: Build Flutter
      run: flutter build ios --no-codesign
-     
-   - name: Publish iOS Artefacts
-     uses: actions/upload-artifact@v1
-     with:
-       name: release-ios
-       path: build/ios
 
-
-
-
-name: Create iOS ipa
-on:
-  push:
-    branches: [main]
-
-env:
-  pkg_name: tachidesk-sorayomi
-jobs:
-  create-build:
-    name: Create ${{ matrix.target }} build
-    runs-on: ${{ matrix.os }}
-    # softprops/action-gh-release needs this permission
-    permissions:
-      contents: write
-
-    strategy:
-      # Disable fail-fast as we want results from all even if one fails.
-      fail-fast: false
-      matrix:
-        include:
-          - os: macos-latest
-            target: ios
-            build_path: build/ios
-          
-    steps:
-      - uses: subosito/flutter-action@v2
-        with:
-          channel: 'beta'
-      - run: flutter doctor -v
-      - uses: actions/checkout@v3
-      # - run: flutter create .
-      # - run: flutter pub get
-
-      - if: matrix.target == 'ios'
-        run: flutter build ios --release --no-codesign
-
-      - name: Compress build for iOS
-        if: matrix.target == 'ios'
-        working-directory: ${{ matrix.build_path }}
-        run: |
+   - name: Build ipa
+     run: |
+          cd build/ios
           cd iphoneos
           mkdir Payload
           cd Payload
           ln -s ../Runner.app
           cd ..
           zip -r app-release.ipa Payload
-          mv app-release.ipa "$GITHUB_WORKSPACE/${{ env.pkg_name }}-${{ github.ref_name }}-${{ matrix.target }}.ipa"
-
-      - name: Publish iOS Artefacts
-        uses: actions/upload-artifact@v1
-        with:
-          name: release-ios
-          path: $GITHUB_WORKSPACE
+     
+   - name: Publish iOS Artefacts
+     uses: actions/upload-artifact@v1
+     with:
+       name: release-ios
+       path: build/ios
