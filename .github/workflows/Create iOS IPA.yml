@@ -49,4 +49,5 @@ jobs:
       - name: Publish iOS Artefacts
         uses: actions/upload-artifact@v1
         with:
+          name: release-ios
           path: $GITHUB_WORKSPACE
