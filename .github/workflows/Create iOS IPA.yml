@@ -37,4 +37,4 @@ jobs:
      uses: actions/upload-artifact@v1
      with:
        name: release-ios
-       path: build/ios/app-release.ipa
+       path: build/ios/iphoneos/app-release.ipa
