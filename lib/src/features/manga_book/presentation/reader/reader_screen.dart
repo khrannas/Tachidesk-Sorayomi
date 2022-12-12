@@ -97,7 +97,7 @@ class ReaderScreen extends HookConsumerWidget {
                       "${Endpoints.baseApi(baseUrl: ref.watch(serverUrlProvider), appendApiToUrl: true)}"
                       "$imageUrl/?useCache=true";
                   final result = cacheManager.getSingleFile(baseApi);
-                  //result.then((value) => print(value.uri));
+                  result.then((value) => print(value.uri));
                 }
               },
             );
