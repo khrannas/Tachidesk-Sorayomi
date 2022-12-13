@@ -99,7 +99,7 @@ enum KRadius {
 }
 
 const mangaCoverGridDelegate = SliverGridDelegateWithMaxCrossAxisExtent(
-  maxCrossAxisExtent: 192,
+  maxCrossAxisExtent: 175,
   crossAxisSpacing: 2.0,
   mainAxisSpacing: 2.0,
   childAspectRatio: 0.75,

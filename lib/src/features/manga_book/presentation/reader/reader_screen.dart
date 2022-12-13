@@ -77,30 +77,30 @@ class ReaderScreen extends HookConsumerWidget {
             if (chapterData == null) return const SizedBox.shrink();
 
             //[TODO] add if prefetch next chapter
-            final CacheManager cacheManager = DefaultCacheManager();
-            final nextChapterProvider = chapterProvider(
-              mangaId: "${data.id}",
-              chapterIndex: "${chapterData.index! + 1}",
-            );
-            final nextChapter = ref.read(nextChapterProvider);
+            if (chapterData.index! < data.chapterCount!) {
+              final CacheManager cacheManager = DefaultCacheManager();
+              final nextChapterProvider = chapterProvider(
+                mangaId: "${data.id}",
+                chapterIndex: "${chapterData.index! + 1}",
+              );
+              final nextChapter = ref.watch(nextChapterProvider);
 
-            nextChapter.whenData(
-              (value) {
-                print("${value!.id}:${value.pageCount}");
-                for (var i = 0; i < value!.pageCount!; i++) {
-                  final imageUrl = MangaUrl.chapterPageWithIndex(
-                    chapterIndex: "${value.index}",
-                    mangaId: "${data.id}",
-                    pageIndex: "$i",
-                  );
-                  final baseApi =
-                      "${Endpoints.baseApi(baseUrl: ref.watch(serverUrlProvider), appendApiToUrl: true)}"
-                      "$imageUrl/?useCache=true";
-                  final result = cacheManager.getSingleFile(baseApi);
-                  result.then((value) => print(value.uri));
-                }
-              },
-            );
+              nextChapter.whenData(
+                (value) {
+                  for (var i = 0; i < value!.pageCount!; i++) {
+                    final imageUrl = MangaUrl.chapterPageWithIndex(
+                      chapterIndex: "${value.index}",
+                      mangaId: "${data.id}",
+                      pageIndex: "$i",
+                    );
+                    final baseApi =
+                        "${Endpoints.baseApi(baseUrl: ref.watch(serverUrlProvider), appendApiToUrl: true)}"
+                        "$imageUrl/?useCache=true";
+                    cacheManager.getSingleFile(baseApi);
+                  }
+                },
+              );
+            }
 
             switch (readerMode) {
               case ReaderMode.singleVertical:
