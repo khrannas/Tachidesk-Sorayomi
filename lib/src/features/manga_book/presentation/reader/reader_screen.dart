@@ -78,32 +78,6 @@ class ReaderScreen extends HookConsumerWidget {
     //       (chapterData) {
     //         if (chapterData == null) return const SizedBox.shrink();
 
-    //         //[TODO] add if prefetch next chapter
-    //         if (chapterData.index! < data.chapterCount!) {
-    //           final CacheManager cacheManager = DefaultCacheManager();
-    //           final nextChapterProvider = chapterProvider(
-    //             mangaId: "${data.id}",
-    //             chapterIndex: "${chapterData.index! + 1}",
-    //           );
-    //           final nextChapter = ref.watch(nextChapterProvider);
-
-    //           nextChapter.whenData(
-    //             (value) {
-    //               for (var i = 0; i < value!.pageCount!; i++) {
-    //                 final imageUrl = MangaUrl.chapterPageWithIndex(
-    //                   chapterIndex: "${value.index}",
-    //                   mangaId: "${data.id}",
-    //                   pageIndex: "$i",
-    //                 );
-    //                 final baseApi =
-    //                     "${Endpoints.baseApi(baseUrl: ref.watch(serverUrlProvider), appendApiToUrl: true)}"
-    //                     "$imageUrl/?useCache=true";
-    //                 cacheManager.getSingleFile(baseApi);
-    //               }
-    //             },
-    //           );
-    //         }
-
     //         switch (readerMode) {
     //           case ReaderMode.singleVertical:
     //             return SinglePageReaderMode(
@@ -159,6 +133,33 @@ class ReaderScreen extends HookConsumerWidget {
               addScaffoldWrapper: true,
               (chapterData) {
                 if (chapterData == null) return const SizedBox.shrink();
+
+                //[TODO] add if prefetch next chapter
+                if (chapterData.index! < data.chapterCount!) {
+                  final CacheManager cacheManager = DefaultCacheManager();
+                  final nextChapterProvider = chapterProvider(
+                    mangaId: "${data.id}",
+                    chapterIndex: "${chapterData.index! + 1}",
+                  );
+                  final nextChapter = ref.watch(nextChapterProvider);
+
+                  nextChapter.whenData(
+                    (value) {
+                      for (var i = 0; i < value!.pageCount!; i++) {
+                        final imageUrl = MangaUrl.chapterPageWithIndex(
+                          chapterIndex: "${value.index}",
+                          mangaId: "${data.id}",
+                          pageIndex: "$i",
+                        );
+                        final baseApi =
+                            "${Endpoints.baseApi(baseUrl: ref.watch(serverUrlProvider), appendApiToUrl: true)}"
+                            "$imageUrl/?useCache=true";
+                        cacheManager.getSingleFile(baseApi);
+                      }
+                    },
+                  );
+                }
+
                 switch (data.meta?.readerMode ?? defaultReaderMode) {
                   case ReaderMode.singleVertical:
                     return SinglePageReaderMode(
