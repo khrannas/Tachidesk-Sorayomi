@@ -189,11 +189,11 @@ class ReaderWrapper extends HookConsumerWidget {
                           color: Colors.black.withOpacity(.7),
                           shape: const CircleBorder(),
                           child: IconButton(
-                            onPressed: prevNextChapterPair?.first != null
+                            onPressed: prevNextChapterPair?.second != null
                                 ? () => context.replace(
                                       Routes.getReader(
-                                        "${prevNextChapterPair!.first!.mangaId}",
-                                        "${prevNextChapterPair.first!.index}",
+                                        "${prevNextChapterPair!.second!.mangaId}",
+                                        "${prevNextChapterPair.second!.index}",
                                       ),
                                     )
                                 : null,
@@ -213,11 +213,11 @@ class ReaderWrapper extends HookConsumerWidget {
                           color: Colors.black.withOpacity(.7),
                           shape: const CircleBorder(),
                           child: IconButton(
-                            onPressed: prevNextChapterPair?.second != null
+                            onPressed: prevNextChapterPair?.first != null
                                 ? () => context.replace(
                                       Routes.getReader(
-                                        "${prevNextChapterPair!.second!.mangaId}",
-                                        "${prevNextChapterPair.second!.index}",
+                                        "${prevNextChapterPair!.first!.mangaId}",
+                                        "${prevNextChapterPair.first!.index}",
                                       ),
                                     )
                                 : null,
