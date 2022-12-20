@@ -15,7 +15,6 @@ import '../../../../../widgets/emoticons.dart';
 import '../../../data/manga_book_repository.dart';
 import '../../../domain/chapter/chapter_model.dart';
 import '../../../domain/manga/manga_model.dart';
-import '../controller/manga_details_controller.dart';
 import 'chapter_list_tile.dart';
 import 'manga_description.dart';
 
@@ -35,11 +34,9 @@ class BigScreenMangaDetails extends ConsumerWidget {
   final AsyncValue<List<Chapter>?> chapterList;
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final filteredChapterList =
-        ref.watch(mangaChapterListWithFilterProvider(mangaId: mangaId));
-
+    final filteredChapterList = chapterList.valueOrNull;
     return RefreshIndicator(
-      onRefresh: () => onRefresh(false),
+      onRefresh: () => onRefresh(true),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -53,7 +50,7 @@ class BigScreenMangaDetails extends ConsumerWidget {
                 addMangaToLibrary: (() => ref
                     .read(mangaBookRepositoryProvider)
                     .addMangaToLibrary(mangaId)),
-                refresh: () => onRefresh(true),
+                refresh: () => onRefresh(false),
               ),
             ),
           ),
@@ -74,6 +71,7 @@ class BigScreenMangaDetails extends ConsumerWidget {
                       ),
                       Expanded(
                         child: ListView.builder(
+                          physics: const AlwaysScrollableScrollPhysics(),
                           itemBuilder: (context, index) {
                             if (filteredChapterList.length == index) {
                               return const ListTile();
@@ -85,7 +83,7 @@ class BigScreenMangaDetails extends ConsumerWidget {
                               key: key,
                               manga: manga,
                               chapter: chapter,
-                              updateData: () => onRefresh(true),
+                              updateData: () => onRefresh(false),
                               isSelected: selectedChapters.value
                                   .containsKey(chapter.id),
                               canTapSelect: selectedChapters.value.isNotEmpty,
@@ -105,13 +103,13 @@ class BigScreenMangaDetails extends ConsumerWidget {
                   return Emoticons(
                     text: LocaleKeys.noChaptersFound.tr(),
                     button: TextButton(
-                      onPressed: () => onRefresh(false),
+                      onPressed: () => onRefresh(true),
                       child: Text(LocaleKeys.refresh.tr()),
                     ),
                   );
                 }
               },
-              refresh: () => onRefresh(true),
+              refresh: () => onRefresh(false),
             ),
           ),
         ],

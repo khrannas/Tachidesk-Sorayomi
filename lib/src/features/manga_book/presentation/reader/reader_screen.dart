@@ -41,106 +41,165 @@ class ReaderScreen extends HookConsumerWidget {
     final defaultReaderMode = ref.watch(readerModeKeyProvider);
     final onPageChanged =
         useCallback<AsyncValueSetter<int>>((int currentPage) async {
+      final chapterValue = chapter.valueOrNull;
+      final isReadingCompeted = chapterValue != null &&
+          ((chapterValue.read).ifNull() ||
+              (currentPage >=
+                  ((chapterValue.pageCount).ifNullOrNegative() - 1)));
       await AsyncValue.guard(
         () => ref.read(mangaBookRepositoryProvider).putChapter(
               mangaId: mangaId,
               chapterIndex: chapterIndex,
               patch: ChapterPut(
-                lastPageRead: currentPage,
-                read: (currentPage == -1),
+                lastPageRead: isReadingCompeted ? 0 : currentPage,
+                read: isReadingCompeted,
               ),
             ),
       );
-      if (currentPage == -1) {
-        ref.invalidate(mangaChapterListProvider(mangaId: mangaId));
-      }
       return;
-    }, []);
+    }, [chapter]);
 
-    return manga.showUiWhenData(
-      addScaffoldWrapper: true,
-      refresh: () => ref.refresh(mangaProvider),
-      (data) {
-        if (data == null) return const SizedBox.shrink();
-        final readerMode = data.meta.isNotBlank &&
-                data.meta!.containsKey(ChapterMeta.readerMode.key)
-            ? ReaderMode.values.firstWhere(
-                (element) =>
-                    element.name == data.meta![ChapterMeta.readerMode.key],
-                orElse: () => defaultReaderMode ?? ReaderMode.webtoon,
-              )
-            : defaultReaderMode;
-        return chapter.showUiWhenData(
-          refresh: () => ref.refresh(provider),
-          addScaffoldWrapper: true,
-          (chapterData) {
-            if (chapterData == null) return const SizedBox.shrink();
+    // return manga.showUiWhenData(
+    //   addScaffoldWrapper: true,
+    //   refresh: () => ref.refresh(mangaProvider),
+    //   (data) {
+    //     if (data == null) return const SizedBox.shrink();
+    //     final readerMode = data.meta.isNotBlank &&
+    //             data.meta!.containsKey(ChapterMeta.readerMode.key)
+    //         ? ReaderMode.values.firstWhere(
+    //             (element) =>
+    //                 element.name == data.meta![ChapterMeta.readerMode.key],
+    //             orElse: () => defaultReaderMode ?? ReaderMode.webtoon,
+    //           )
+    //         : defaultReaderMode;
+    //     return chapter.showUiWhenData(
+    //       refresh: () => ref.refresh(provider),
+    //       addScaffoldWrapper: true,
+    //       (chapterData) {
+    //         if (chapterData == null) return const SizedBox.shrink();
 
-            //[TODO] add if prefetch next chapter
-            if (chapterData.index! < data.chapterCount!) {
-              final CacheManager cacheManager = DefaultCacheManager();
-              final nextChapterProvider = chapterProvider(
-                mangaId: "${data.id}",
-                chapterIndex: "${chapterData.index! + 1}",
-              );
-              final nextChapter = ref.watch(nextChapterProvider);
+    //         //[TODO] add if prefetch next chapter
+    //         if (chapterData.index! < data.chapterCount!) {
+    //           final CacheManager cacheManager = DefaultCacheManager();
+    //           final nextChapterProvider = chapterProvider(
+    //             mangaId: "${data.id}",
+    //             chapterIndex: "${chapterData.index! + 1}",
+    //           );
+    //           final nextChapter = ref.watch(nextChapterProvider);
 
-              nextChapter.whenData(
-                (value) {
-                  for (var i = 0; i < value!.pageCount!; i++) {
-                    final imageUrl = MangaUrl.chapterPageWithIndex(
-                      chapterIndex: "${value.index}",
-                      mangaId: "${data.id}",
-                      pageIndex: "$i",
-                    );
-                    final baseApi =
-                        "${Endpoints.baseApi(baseUrl: ref.watch(serverUrlProvider), appendApiToUrl: true)}"
-                        "$imageUrl/?useCache=true";
-                    cacheManager.getSingleFile(baseApi);
-                  }
-                },
-              );
-            }
+    //           nextChapter.whenData(
+    //             (value) {
+    //               for (var i = 0; i < value!.pageCount!; i++) {
+    //                 final imageUrl = MangaUrl.chapterPageWithIndex(
+    //                   chapterIndex: "${value.index}",
+    //                   mangaId: "${data.id}",
+    //                   pageIndex: "$i",
+    //                 );
+    //                 final baseApi =
+    //                     "${Endpoints.baseApi(baseUrl: ref.watch(serverUrlProvider), appendApiToUrl: true)}"
+    //                     "$imageUrl/?useCache=true";
+    //                 cacheManager.getSingleFile(baseApi);
+    //               }
+    //             },
+    //           );
+    //         }
 
-            switch (readerMode) {
-              case ReaderMode.singleVertical:
-                return SinglePageReaderMode(
-                  chapter: chapterData,
-                  manga: data,
-                  onPageChanged: onPageChanged,
-                  scrollDirection: Axis.vertical,
-                );
-              case ReaderMode.singleHorizontalRTL:
-                return SinglePageReaderMode(
-                  chapter: chapterData,
-                  manga: data,
-                  onPageChanged: onPageChanged,
-                  reverse: true,
-                );
-              case ReaderMode.singleHorizontalLTR:
-                return SinglePageReaderMode(
-                  chapter: chapterData,
-                  manga: data,
-                  onPageChanged: onPageChanged,
-                );
-              case ReaderMode.continuousVertical:
-                return WebtoonReaderMode(
-                  chapter: chapterData,
-                  manga: data,
-                  onPageChanged: onPageChanged,
-                  showSeparator: true,
-                );
-              case ReaderMode.webtoon:
-              default:
-                return WebtoonReaderMode(
-                  chapter: chapterData,
-                  manga: data,
-                  onPageChanged: onPageChanged,
-                );
-            }
-          },
-        );
+    //         switch (readerMode) {
+    //           case ReaderMode.singleVertical:
+    //             return SinglePageReaderMode(
+    //               chapter: chapterData,
+    //               manga: data,
+    //               onPageChanged: onPageChanged,
+    //               scrollDirection: Axis.vertical,
+    //             );
+    //           case ReaderMode.singleHorizontalRTL:
+    //             return SinglePageReaderMode(
+    //               chapter: chapterData,
+    //               manga: data,
+    //               onPageChanged: onPageChanged,
+    //               reverse: true,
+    //             );
+    //           case ReaderMode.singleHorizontalLTR:
+    //             return SinglePageReaderMode(
+    //               chapter: chapterData,
+    //               manga: data,
+    //               onPageChanged: onPageChanged,
+    //             );
+    //           case ReaderMode.continuousVertical:
+    //             return WebtoonReaderMode(
+    //               chapter: chapterData,
+    //               manga: data,
+    //               onPageChanged: onPageChanged,
+    //               showSeparator: true,
+    //             );
+    //           case ReaderMode.webtoon:
+    //           default:
+    //             return WebtoonReaderMode(
+    //               chapter: chapterData,
+    //               manga: data,
+    //               onPageChanged: onPageChanged,
+    //             );
+    //         }
+    //       },
+    //     );
+    return WillPopScope(
+      onWillPop: () async {
+        ref.invalidate(provider);
+        ref.invalidate(mangaChapterListProvider(mangaId: mangaId));
+        return true;
       },
+      child: SafeArea(
+        child: manga.showUiWhenData(
+          addScaffoldWrapper: true,
+          refresh: () => ref.refresh(mangaProvider),
+          (data) {
+            if (data == null) return const SizedBox.shrink();
+            return chapter.showUiWhenData(
+              refresh: () => ref.refresh(provider),
+              addScaffoldWrapper: true,
+              (chapterData) {
+                if (chapterData == null) return const SizedBox.shrink();
+                switch (data.meta?.readerMode ?? defaultReaderMode) {
+                  case ReaderMode.singleVertical:
+                    return SinglePageReaderMode(
+                      chapter: chapterData,
+                      manga: data,
+                      onPageChanged: onPageChanged,
+                      scrollDirection: Axis.vertical,
+                    );
+                  case ReaderMode.singleHorizontalRTL:
+                    return SinglePageReaderMode(
+                      chapter: chapterData,
+                      manga: data,
+                      onPageChanged: onPageChanged,
+                      reverse: true,
+                    );
+                  case ReaderMode.singleHorizontalLTR:
+                    return SinglePageReaderMode(
+                      chapter: chapterData,
+                      manga: data,
+                      onPageChanged: onPageChanged,
+                    );
+                  case ReaderMode.continuousVertical:
+                    return WebtoonReaderMode(
+                      chapter: chapterData,
+                      manga: data,
+                      onPageChanged: onPageChanged,
+                      showSeparator: true,
+                    );
+                  case ReaderMode.webtoon:
+                  default:
+                    return WebtoonReaderMode(
+                      chapter: chapterData,
+                      manga: data,
+                      onPageChanged: onPageChanged,
+                    );
+                }
+              },
+            );
+          },
+        ),
+      ),
     );
   }
 }

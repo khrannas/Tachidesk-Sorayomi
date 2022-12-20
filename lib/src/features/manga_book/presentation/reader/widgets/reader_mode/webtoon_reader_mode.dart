@@ -37,7 +37,13 @@ class WebtoonReaderMode extends HookWidget {
   Widget build(BuildContext context) {
     final scrollController = useMemoized(() => ItemScrollController());
     final positionsListener = useMemoized(() => ItemPositionsListener.create());
-    final currentIndex = useState(0);
+    final currentIndex = useState(
+      chapter.read.ifNull() ? 0 : (chapter.lastPageRead).ifNullOrNegative(),
+    );
+    useEffect(() {
+      if (onPageChanged != null) onPageChanged!(currentIndex.value);
+      return;
+    }, [currentIndex.value]);
     useEffect(() {
       listener() {
         final positions = positionsListener.itemPositions.value.toList();
@@ -93,9 +99,13 @@ class WebtoonReaderMode extends HookWidget {
         );
       },
       child: InteractiveViewer(
+        maxScale: 8,
         child: ScrollablePositionedList.separated(
           itemScrollController: scrollController,
           itemPositionsListener: positionsListener,
+          initialScrollIndex: chapter.read.ifNull()
+              ? 0
+              : chapter.lastPageRead.ifNullOrNegative(),
           itemBuilder: (BuildContext context, int index) {
             final image = ServerImage(
               fit: BoxFit.fitWidth,
@@ -132,9 +142,6 @@ class WebtoonReaderMode extends HookWidget {
                 ],
               );
             } else if (index == (chapter.pageCount ?? 0) - 1) {
-              if (onPageChanged != null) {
-                onPageChanged!(-1);
-              }
               return Column(
                 mainAxisSize: MainAxisSize.min,
                 crossAxisAlignment: CrossAxisAlignment.stretch,

@@ -7,11 +7,14 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
+import 'package:go_router/go_router.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 import '../../../../constants/app_sizes.dart';
 import '../../../../i18n/locale_keys.g.dart';
+import '../../../../routes/router_config.dart';
 import '../../../../utils/extensions/custom_extensions.dart';
+import '../../../../utils/misc/toast/toast.dart';
 import '../../../../widgets/emoticons.dart';
 import '../../domain/chapter/chapter_model.dart';
 import '../../widgets/chapter_actions/multi_chapters_actions_bottom_app_bar.dart';
@@ -27,18 +30,38 @@ class MangaDetailsScreen extends HookConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final provider = mangaWithIdProvider(mangaId: mangaId);
-    final chapterListProvider = mangaChapterListProvider(mangaId: mangaId);
+    final provider = useMemoized(() => mangaWithIdProvider(mangaId: mangaId));
+    final chapterListProvider = useMemoized(
+      () => mangaChapterListProvider(mangaId: mangaId),
+    );
     final manga = ref.watch(provider);
-    final chapterList = ref.watch(chapterListProvider);
+    final filteredChapterList =
+        ref.watch(mangaChapterListWithFilterProvider(mangaId: mangaId));
+
+    final firstUnreadChapter = ref.watch(
+      firstUnreadInFilteredChapterListProvider(mangaId: mangaId),
+    );
+
     final selectedChapters = useState<Map<int, Chapter>>({});
-    refresh([useCache = true]) async {
-      await ref.read(chapterListProvider.notifier).refresh(useCache);
-      await ref.read(provider.notifier).refresh(useCache);
-    }
+    final refresh = useCallback(([onlineFetch = false]) async {
+      if (context.mounted && onlineFetch) {
+        ref.read(toastProvider(context)).show(
+              LocaleKeys.updating.tr(),
+              withMicrotask: true,
+            );
+      }
+      await ref.read(chapterListProvider.notifier).refresh(onlineFetch);
+      await ref.read(provider.notifier).refresh(onlineFetch);
+      if (context.mounted && onlineFetch) {
+        ref.read(toastProvider(context)).show(
+              LocaleKeys.updateCompleted.tr(),
+              withMicrotask: true,
+            );
+      }
+    }, []);
 
     useEffect(() {
-      if (!chapterList.isLoading && !manga.isLoading) refresh();
+      if (!filteredChapterList.isLoading && !manga.isLoading) refresh();
       return;
     }, []);
 
@@ -60,10 +83,14 @@ class MangaDetailsScreen extends HookConsumerWidget {
                     onPressed: () {
                       selectedChapters.value = {
                         for (Chapter i in [
-                          ...?ref.read(mangaChapterListWithFilterProvider(
-                              mangaId: mangaId))
+                          ...?ref
+                              .read(
+                                mangaChapterListWithFilterProvider(
+                                    mangaId: mangaId),
+                              )
+                              .valueOrNull
                         ])
-                          i.id ?? -1: i
+                          if (i.id != null) i.id!: i
                       };
                     },
                     icon: const Icon(Icons.select_all_rounded),
@@ -72,12 +99,15 @@ class MangaDetailsScreen extends HookConsumerWidget {
                     onPressed: () {
                       final newMap = {
                         for (Chapter i in [
-                          ...?ref.read(mangaChapterListWithFilterProvider(
-                              mangaId: mangaId))
+                          ...?ref
+                              .read(mangaChapterListWithFilterProvider(
+                                  mangaId: mangaId))
+                              .valueOrNull
                         ])
-                          i.id ?? -1: i
-                      }..removeWhere((key, value) =>
-                          selectedChapters.value.containsKey(key));
+                          if (i.id != null &&
+                              !selectedChapters.value.containsKey(key))
+                            i.id!: i
+                      };
                       selectedChapters.value = newMap;
                     },
                     icon: const Icon(Icons.flip_to_back_rounded),
@@ -87,6 +117,11 @@ class MangaDetailsScreen extends HookConsumerWidget {
             : AppBar(
                 title: Text(data?.title ?? LocaleKeys.manga.tr()),
                 actions: [
+                  if (context.isTablet)
+                    IconButton(
+                      onPressed: () => refresh(true),
+                      icon: const Icon(Icons.refresh_rounded),
+                    ),
                   Builder(
                     builder: (context) => IconButton(
                       onPressed: () {
@@ -113,7 +148,6 @@ class MangaDetailsScreen extends HookConsumerWidget {
                     icon: const Icon(Icons.more_vert_rounded),
                     itemBuilder: (context) => [
                       PopupMenuItem(
-                        child: Text(LocaleKeys.editCategory.tr()),
                         onTap: () => Future.microtask(
                           () => showDialog(
                             context: context,
@@ -121,7 +155,13 @@ class MangaDetailsScreen extends HookConsumerWidget {
                                 EditMangaCategoryDialog(mangaId: mangaId),
                           ),
                         ),
+                        child: Text(LocaleKeys.editCategory.tr()),
                       ),
+                      if (!context.isTablet)
+                        PopupMenuItem(
+                          onTap: () => refresh(true),
+                          child: Text(LocaleKeys.refresh.tr()),
+                        ),
                     ],
                   )
                 ],
@@ -133,21 +173,40 @@ class MangaDetailsScreen extends HookConsumerWidget {
         bottomSheet: selectedChapters.value.isNotEmpty
             ? MultiChaptersActionsBottomAppBar(
                 afterOptionSelected: () async =>
-                    ref.read(chapterListProvider.notifier).refresh(true),
+                    ref.read(chapterListProvider.notifier).refresh(),
                 selectedChapters: selectedChapters,
+              )
+            : null,
+        floatingActionButton: firstUnreadChapter != null
+            ? FloatingActionButton.extended(
+                isExtended: context.isTablet,
+                label: Text(
+                  data?.lastChapterRead?.index != null
+                      ? LocaleKeys.resume.tr()
+                      : LocaleKeys.start.tr(),
+                ),
+                icon: const Icon(Icons.play_arrow_rounded),
+                onPressed: () {
+                  context.push(
+                    Routes.getReader(
+                      "${firstUnreadChapter.mangaId ?? mangaId}",
+                      "${firstUnreadChapter.index ?? 0}",
+                    ),
+                  );
+                },
               )
             : null,
         body: data != null
             ? context.isTablet
                 ? BigScreenMangaDetails(
-                    chapterList: chapterList,
+                    chapterList: filteredChapterList,
                     manga: data,
                     mangaId: mangaId,
                     onRefresh: refresh,
                     selectedChapters: selectedChapters,
                   )
                 : SmallScreenMangaDetails(
-                    chapterList: chapterList,
+                    chapterList: filteredChapterList,
                     manga: data,
                     mangaId: mangaId,
                     onRefresh: refresh,

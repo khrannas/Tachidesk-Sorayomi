@@ -29,7 +29,7 @@ class _SystemHash {
   }
 }
 
-String $MangaWithIdHash() => r'7e5bfef14dc5b0bafba380a008f3fd4ca68c958b';
+String $MangaWithIdHash() => r'34066d958171e4089e173a5124751043e0aad8ec';
 
 /// See also [MangaWithId].
 class MangaWithIdProvider
@@ -114,7 +114,7 @@ abstract class _$MangaWithId extends BuildlessAutoDisposeAsyncNotifier<Manga?> {
   });
 }
 
-String $MangaChapterListHash() => r'8ed43b761da658c69465a7c3653900b67f1e972c';
+String $MangaChapterListHash() => r'e29cf9a87f5f09029b63f16b0074a4f7466d8b92';
 
 /// See also [MangaChapterList].
 class MangaChapterListProvider extends AutoDisposeAsyncNotifierProviderImpl<
@@ -388,11 +388,11 @@ abstract class _$MangaCategoryList
 }
 
 String $mangaChapterListWithFilterHash() =>
-    r'60995f367091cb899dfedab8812f58878418d2fc';
+    r'a5ca407ed7a6d0989e90ce3d56614bb387597ac2';
 
 /// See also [mangaChapterListWithFilter].
 class MangaChapterListWithFilterProvider
-    extends AutoDisposeProvider<List<Chapter>?> {
+    extends AutoDisposeProvider<AsyncValue<List<Chapter>?>> {
   MangaChapterListWithFilterProvider({
     required this.mangaId,
   }) : super(
@@ -425,12 +425,14 @@ class MangaChapterListWithFilterProvider
   }
 }
 
-typedef MangaChapterListWithFilterRef = AutoDisposeProviderRef<List<Chapter>?>;
+typedef MangaChapterListWithFilterRef
+    = AutoDisposeProviderRef<AsyncValue<List<Chapter>?>>;
 
 /// See also [mangaChapterListWithFilter].
 final mangaChapterListWithFilterProvider = MangaChapterListWithFilterFamily();
 
-class MangaChapterListWithFilterFamily extends Family<List<Chapter>?> {
+class MangaChapterListWithFilterFamily
+    extends Family<AsyncValue<List<Chapter>?>> {
   MangaChapterListWithFilterFamily();
 
   MangaChapterListWithFilterProvider call({
@@ -442,7 +444,7 @@ class MangaChapterListWithFilterFamily extends Family<List<Chapter>?> {
   }
 
   @override
-  AutoDisposeProvider<List<Chapter>?> getProviderOverride(
+  AutoDisposeProvider<AsyncValue<List<Chapter>?>> getProviderOverride(
     covariant MangaChapterListWithFilterProvider provider,
   ) {
     return call(
@@ -460,8 +462,82 @@ class MangaChapterListWithFilterFamily extends Family<List<Chapter>?> {
   String? get name => r'mangaChapterListWithFilterProvider';
 }
 
+String $firstUnreadInFilteredChapterListHash() =>
+    r'60d7452267e74bafdc290890223cc3a641e06305';
+
+/// See also [firstUnreadInFilteredChapterList].
+class FirstUnreadInFilteredChapterListProvider
+    extends AutoDisposeProvider<Chapter?> {
+  FirstUnreadInFilteredChapterListProvider({
+    required this.mangaId,
+  }) : super(
+          (ref) => firstUnreadInFilteredChapterList(
+            ref,
+            mangaId: mangaId,
+          ),
+          from: firstUnreadInFilteredChapterListProvider,
+          name: r'firstUnreadInFilteredChapterListProvider',
+          debugGetCreateSourceHash:
+              const bool.fromEnvironment('dart.vm.product')
+                  ? null
+                  : $firstUnreadInFilteredChapterListHash,
+        );
+
+  final String mangaId;
+
+  @override
+  bool operator ==(Object other) {
+    return other is FirstUnreadInFilteredChapterListProvider &&
+        other.mangaId == mangaId;
+  }
+
+  @override
+  int get hashCode {
+    var hash = _SystemHash.combine(0, runtimeType.hashCode);
+    hash = _SystemHash.combine(hash, mangaId.hashCode);
+
+    return _SystemHash.finish(hash);
+  }
+}
+
+typedef FirstUnreadInFilteredChapterListRef = AutoDisposeProviderRef<Chapter?>;
+
+/// See also [firstUnreadInFilteredChapterList].
+final firstUnreadInFilteredChapterListProvider =
+    FirstUnreadInFilteredChapterListFamily();
+
+class FirstUnreadInFilteredChapterListFamily extends Family<Chapter?> {
+  FirstUnreadInFilteredChapterListFamily();
+
+  FirstUnreadInFilteredChapterListProvider call({
+    required String mangaId,
+  }) {
+    return FirstUnreadInFilteredChapterListProvider(
+      mangaId: mangaId,
+    );
+  }
+
+  @override
+  AutoDisposeProvider<Chapter?> getProviderOverride(
+    covariant FirstUnreadInFilteredChapterListProvider provider,
+  ) {
+    return call(
+      mangaId: provider.mangaId,
+    );
+  }
+
+  @override
+  List<ProviderOrFamily>? get allTransitiveDependencies => null;
+
+  @override
+  List<ProviderOrFamily>? get dependencies => null;
+
+  @override
+  String? get name => r'firstUnreadInFilteredChapterListProvider';
+}
+
 String $getPreviousAndNextChaptersHash() =>
-    r'8db14cff31abbea310152b38f25bcfe581efd7ab';
+    r'c96d69daa0b66402a78052eb11af57f223c3e465';
 
 /// See also [getPreviousAndNextChapters].
 class GetPreviousAndNextChaptersProvider

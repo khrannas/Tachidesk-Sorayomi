@@ -64,10 +64,26 @@ class ChapterListTile extends StatelessWidget {
         ],
       ),
       subtitle: chapter.uploadDate != null
-          ? Text(
-              chapter.uploadDate!.toDaysAgo,
-              style:
-                  TextStyle(color: chapter.read ?? false ? Colors.grey : null),
+          ? Row(
+              children: [
+                Text(
+                  chapter.uploadDate!.toDaysAgo,
+                  style: TextStyle(
+                    color: chapter.read ?? false ? Colors.grey : null,
+                  ),
+                ),
+                if (!chapter.read.ifNull() &&
+                    (chapter.lastPageRead).ifNullOrNegative() != 0)
+                  Text(
+                    " • ${LocaleKeys.page.tr(
+                      namedArgs: {
+                        "number":
+                            "${chapter.lastPageRead.ifNullOrNegative() + 1}"
+                      },
+                    )}",
+                    style: const TextStyle(color: Colors.grey),
+                  ),
+              ],
             )
           : null,
       trailing: (chapter.index != null && manga.id != null)
@@ -85,7 +101,10 @@ class ChapterListTile extends StatelessWidget {
       onTap: canTapSelect
           ? () => toggleSelect(chapter)
           : () => context.push(
-                Routes.getReader("${manga.id}", "${chapter.index}"),
+                Routes.getReader(
+                  "${manga.id}",
+                  "${chapter.index}",
+                ),
               ),
       onLongPress: () => toggleSelect(chapter),
     );

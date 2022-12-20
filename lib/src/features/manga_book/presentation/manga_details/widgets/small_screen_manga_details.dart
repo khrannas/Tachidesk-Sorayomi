@@ -15,7 +15,6 @@ import '../../../../../widgets/emoticons.dart';
 import '../../../data/manga_book_repository.dart';
 import '../../../domain/chapter/chapter_model.dart';
 import '../../../domain/manga/manga_model.dart';
-import '../controller/manga_details_controller.dart';
 import 'chapter_list_tile.dart';
 import 'manga_description.dart';
 
@@ -35,18 +34,17 @@ class SmallScreenMangaDetails extends ConsumerWidget {
   final AsyncValue<List<Chapter>?> chapterList;
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final filteredChapterList =
-        ref.watch(mangaChapterListWithFilterProvider(mangaId: mangaId));
-
+    final filteredChapterList = chapterList.valueOrNull;
     return RefreshIndicator(
-      onRefresh: () => onRefresh(false),
+      onRefresh: () => onRefresh(true),
       child: CustomScrollView(
+        physics: const AlwaysScrollableScrollPhysics(),
         slivers: [
           SliverToBoxAdapter(
             child: SingleChildScrollView(
               child: MangaDescription(
                 manga: manga,
-                refresh: () => onRefresh(true),
+                refresh: () => onRefresh(false),
                 removeMangaFromLibrary: () => ref
                     .read(mangaBookRepositoryProvider)
                     .removeMangaFromLibrary(mangaId),
@@ -74,7 +72,7 @@ class SmallScreenMangaDetails extends ConsumerWidget {
                       key: ValueKey("${filteredChapterList[index].id}"),
                       manga: manga,
                       chapter: filteredChapterList[index],
-                      updateData: () => onRefresh(true),
+                      updateData: () => onRefresh(false),
                       isSelected: selectedChapters.value
                           .containsKey(filteredChapterList[index].id),
                       canTapSelect: selectedChapters.value.isNotEmpty,
@@ -92,14 +90,14 @@ class SmallScreenMangaDetails extends ConsumerWidget {
                   child: Emoticons(
                     text: LocaleKeys.noChaptersFound.tr(),
                     button: TextButton(
-                      onPressed: () => onRefresh(false),
+                      onPressed: () => onRefresh(true),
                       child: Text(LocaleKeys.refresh.tr()),
                     ),
                   ),
                 );
               }
             },
-            refresh: () => onRefresh(true),
+            refresh: () => onRefresh(false),
             wrapper: (child) => SliverToBoxAdapter(
               child: SizedBox(
                 height: context.height * .5,

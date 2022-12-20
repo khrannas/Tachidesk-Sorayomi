@@ -58,70 +58,92 @@ class ReaderWrapper extends HookConsumerWidget {
       ),
     );
     final visibility = useState(true);
-    final defaultReaderMode = manga.meta.isNotBlank
-        ? ReaderMode.values.firstWhere(
-            (element) =>
-                element.name == manga.meta![ChapterMeta.readerMode.key],
-            orElse: () => ReaderMode.defaultReader,
-          )
-        : ReaderMode.defaultReader;
+    final defaultReaderMode =
+        manga.meta?.readerMode ?? ReaderMode.defaultReader;
+    final defaultReaderNavigationLayout = manga.meta?.readerNavigationLayout ??
+        ReaderNavigationLayout.defaultNavigation;
 
     final showReaderModePopup = useCallback(
-        () => showDialog(
-              context: context,
-              builder: (context) => EnumPopup<ReaderMode>(
-                enumList: ReaderMode.values,
-                value: defaultReaderMode,
-                onChange: (enumValue) async {
-                  if (context.mounted) context.pop();
-
-                  await AsyncValue.guard(
-                    () => ref.read(mangaBookRepositoryProvider).patchMangaMeta(
-                          mangaId: "${manga.id}",
-                          key: ChapterMeta.readerMode.key,
-                          value: enumValue.name,
-                        ),
-                  );
-                  ref.invalidate(
-                    mangaWithIdProvider(mangaId: "${manga.id}"),
-                  );
-                },
-              ),
-            ),
-        []);
-
-    final defaultReaderNavigationLayout = manga.meta.isNotBlank
-        ? ReaderNavigationLayout.values.firstWhere(
-            (element) =>
-                element.name ==
-                manga.meta![ChapterMeta.readerNavigationLayout.key],
-            orElse: () => ReaderNavigationLayout.defaultNavigation,
-          )
-        : ReaderNavigationLayout.defaultNavigation;
+      () => showDialog(
+        context: context,
+        builder: (context) => EnumPopup<ReaderMode>(
+          enumList: ReaderMode.values,
+          value: defaultReaderMode,
+          onChange: (enumValue) async {
+            if (context.mounted) context.pop();
+            await AsyncValue.guard(
+              () => ref.read(mangaBookRepositoryProvider).patchMangaMeta(
+                    mangaId: "${manga.id}",
+                    key: MangaMetaKeys.readerMode.key,
+                    value: enumValue.name,
+                  ),
+            );
+            ref.invalidate(mangaWithIdProvider(mangaId: "${manga.id}"));
+          },
+        ),
+      ),
+      [defaultReaderMode],
+    );
 
     final showReaderNavigationLayoutPopup = useCallback(
-        () => showDialog(
-              context: context,
-              builder: (context) => EnumPopup<ReaderNavigationLayout>(
-                enumList: ReaderNavigationLayout.values,
-                value: defaultReaderNavigationLayout,
-                onChange: (enumValue) async {
-                  if (context.mounted) context.pop();
+      () => showDialog(
+        context: context,
+        builder: (context) => EnumPopup<ReaderNavigationLayout>(
+          enumList: ReaderNavigationLayout.values,
+          value: defaultReaderNavigationLayout,
+          onChange: (enumValue) async {
+            if (context.mounted) context.pop();
+            await AsyncValue.guard(
+              () => ref.read(mangaBookRepositoryProvider).patchMangaMeta(
+                    mangaId: "${manga.id}",
+                    key: MangaMetaKeys.readerNavigationLayout.key,
+                    value: enumValue.name,
+                  ),
+            );
+            ref.invalidate(
+              mangaWithIdProvider(mangaId: "${manga.id}"),
+            );
+          },
+        ),
+      ),
+      [defaultReaderNavigationLayout],
+    );
 
-                  await AsyncValue.guard(
-                    () => ref.read(mangaBookRepositoryProvider).patchMangaMeta(
-                          mangaId: "${manga.id}",
-                          key: ChapterMeta.readerNavigationLayout.key,
-                          value: enumValue.name,
-                        ),
-                  );
-                  ref.invalidate(
-                    mangaWithIdProvider(mangaId: "${manga.id}"),
-                  );
-                },
-              ),
-            ),
-        []);
+    final quickSettings = Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        ListTile(
+          leading: const Icon(
+            Icons.app_settings_alt_outlined,
+          ),
+          title: Text(
+            LocaleKeys.readerMode.tr(),
+          ),
+          subtitle: Text(
+            defaultReaderMode.toString().tr(),
+          ),
+          onTap: () {
+            context.pop();
+            showReaderModePopup();
+          },
+        ),
+        ListTile(
+          leading: const Icon(
+            Icons.touch_app_rounded,
+          ),
+          title: Text(
+            LocaleKeys.readerNavigationLayout.tr(),
+          ),
+          subtitle: Text(
+            defaultReaderNavigationLayout.toString().tr(),
+          ),
+          onTap: () {
+            context.pop();
+            showReaderNavigationLayoutPopup();
+          },
+        ),
+      ],
+    );
 
     return Theme(
       data: context.theme.copyWith(
@@ -149,10 +171,13 @@ class ReaderWrapper extends HookConsumerWidget {
                 ),
                 elevation: 0,
                 backgroundColor: Colors.black.withOpacity(.7),
+                actions: const [SizedBox.shrink()],
               )
             : null,
         extendBodyBehindAppBar: true,
         extendBody: true,
+        endDrawerEnableOpenDragGesture: false,
+        endDrawer: Drawer(width: kDrawerWidth, child: quickSettings),
         bottomSheet: visibility.value
             ? ExcludeFocus(
                 child: Column(
@@ -230,57 +255,25 @@ class ReaderWrapper extends HookConsumerWidget {
                             ),
                           IconButton(
                             icon: const Icon(Icons.app_settings_alt_outlined),
-                            onPressed: showReaderModePopup,
+                            onPressed: () => showReaderModePopup(),
                           ),
-                          IconButton(
-                            onPressed: () {
-                              showModalBottomSheet(
-                                context: context,
-                                clipBehavior: Clip.hardEdge,
-                                builder: (context) {
-                                  return Column(
-                                    mainAxisSize: MainAxisSize.min,
-                                    children: [
-                                      ListTile(
-                                        leading: const Icon(
-                                          Icons.app_settings_alt_outlined,
-                                        ),
-                                        title: Text(
-                                          LocaleKeys.readerMode.tr(),
-                                        ),
-                                        subtitle: Text(
-                                          defaultReaderMode.toString().tr(),
-                                        ),
-                                        onTap: () {
-                                          context.pop();
-                                          showReaderModePopup();
-                                        },
-                                      ),
-                                      ListTile(
-                                        leading: const Icon(
-                                          Icons.touch_app_rounded,
-                                        ),
-                                        title: Text(
-                                          LocaleKeys.readerNavigationLayout
-                                              .tr(),
-                                        ),
-                                        subtitle: Text(
-                                          defaultReaderNavigationLayout
-                                              .toString()
-                                              .tr(),
-                                        ),
-                                        onTap: () {
-                                          context.pop();
-                                          showReaderNavigationLayoutPopup();
-                                        },
-                                      ),
-                                    ],
+                          Builder(builder: (context) {
+                            return IconButton(
+                              onPressed: () {
+                                if (context.isTablet) {
+                                  Scaffold.of(context).openEndDrawer();
+                                } else {
+                                  showModalBottomSheet(
+                                    context: context,
+                                    backgroundColor: context.theme.cardColor,
+                                    clipBehavior: Clip.hardEdge,
+                                    builder: (context) => quickSettings,
                                   );
-                                },
-                              );
-                            },
-                            icon: const Icon(Icons.settings_rounded),
-                          ),
+                                }
+                              },
+                              icon: const Icon(Icons.settings_rounded),
+                            );
+                          }),
                         ],
                       ),
                     ),
