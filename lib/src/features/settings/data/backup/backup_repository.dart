@@ -7,6 +7,7 @@
 import 'package:dio/dio.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:file_picker/file_picker.dart';
+import 'package:flutter/foundation.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 import '../../../../constants/endpoints.dart';
@@ -24,27 +25,32 @@ class BackupRepository {
   final DioClient dioClient;
 
   Future<BackupMissing?> restoreBackup(PlatformFile? file) async {
-    if ((file?.path).isBlank) {
+    if ((file?.name).isBlank ||
+        (kIsWeb && (file?.bytes).isBlank ||
+            (!kIsWeb && (file?.path).isBlank))) {
       throw LocaleKeys.error_filePick.tr();
     }
     if (!(file!.name.endsWith('.proto.gz'))) {
       throw LocaleKeys.error_filePickUnknownExtension
           .tr(namedArgs: {"extensionName": ".proto.gz"});
     }
-    return (file.path).isNotBlank
-        ? (await dioClient.post<BackupMissing, BackupMissing?>(
-            BackupUrl.import,
-            data: FormData.fromMap({
-              'backup.proto.gz': MultipartFile.fromFileSync(
+    return (await dioClient.post<BackupMissing, BackupMissing?>(
+      BackupUrl.import,
+      data: FormData.fromMap({
+        'backup.proto.gz': kIsWeb
+            ? MultipartFile.fromBytes(
+                file.bytes!,
+                filename: "backup.proto.gz",
+              )
+            : MultipartFile.fromFileSync(
                 file.path!,
                 filename: "backup.proto.gz",
               )
-            }),
-            decoder: (e) =>
-                e is Map<String, dynamic> ? BackupMissing.fromJson(e) : null,
-          ))
-            .data
-        : null;
+      }),
+      decoder: (e) =>
+          e is Map<String, dynamic> ? BackupMissing.fromJson(e) : null,
+    ))
+        .data;
   }
 }
 
