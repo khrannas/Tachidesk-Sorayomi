@@ -59,63 +59,6 @@ class ReaderScreen extends HookConsumerWidget {
       return;
     }, [chapter]);
 
-    // return manga.showUiWhenData(
-    //   addScaffoldWrapper: true,
-    //   refresh: () => ref.refresh(mangaProvider),
-    //   (data) {
-    //     if (data == null) return const SizedBox.shrink();
-    //     final readerMode = data.meta.isNotBlank &&
-    //             data.meta!.containsKey(ChapterMeta.readerMode.key)
-    //         ? ReaderMode.values.firstWhere(
-    //             (element) =>
-    //                 element.name == data.meta![ChapterMeta.readerMode.key],
-    //             orElse: () => defaultReaderMode ?? ReaderMode.webtoon,
-    //           )
-    //         : defaultReaderMode;
-    //     return chapter.showUiWhenData(
-    //       refresh: () => ref.refresh(provider),
-    //       addScaffoldWrapper: true,
-    //       (chapterData) {
-    //         if (chapterData == null) return const SizedBox.shrink();
-
-    //         switch (readerMode) {
-    //           case ReaderMode.singleVertical:
-    //             return SinglePageReaderMode(
-    //               chapter: chapterData,
-    //               manga: data,
-    //               onPageChanged: onPageChanged,
-    //               scrollDirection: Axis.vertical,
-    //             );
-    //           case ReaderMode.singleHorizontalRTL:
-    //             return SinglePageReaderMode(
-    //               chapter: chapterData,
-    //               manga: data,
-    //               onPageChanged: onPageChanged,
-    //               reverse: true,
-    //             );
-    //           case ReaderMode.singleHorizontalLTR:
-    //             return SinglePageReaderMode(
-    //               chapter: chapterData,
-    //               manga: data,
-    //               onPageChanged: onPageChanged,
-    //             );
-    //           case ReaderMode.continuousVertical:
-    //             return WebtoonReaderMode(
-    //               chapter: chapterData,
-    //               manga: data,
-    //               onPageChanged: onPageChanged,
-    //               showSeparator: true,
-    //             );
-    //           case ReaderMode.webtoon:
-    //           default:
-    //             return WebtoonReaderMode(
-    //               chapter: chapterData,
-    //               manga: data,
-    //               onPageChanged: onPageChanged,
-    //             );
-    //         }
-    //       },
-    //     );
     return WillPopScope(
       onWillPop: () async {
         ref.invalidate(provider);
@@ -145,6 +88,7 @@ class ReaderScreen extends HookConsumerWidget {
 
                   nextChapter.whenData(
                     (value) {
+                      debugPrint("prefetch");
                       for (var i = 0; i < value!.pageCount!; i++) {
                         final imageUrl = MangaUrl.chapterPageWithIndex(
                           chapterIndex: "${value.index}",
