@@ -136,6 +136,9 @@ You can install Flutter & Dart from [Official website](https://docs.flutter.dev/
    flutter pub run easy_localization:generate -S assets/locales -f keys -O lib/src/i18n/ -o locale_keys.g.dart
 ```
 
+- Pull-Request Suggestion
+  - Install GitHooks after cloning the repo using `git config --local core.hooksPath .githooks`
+
 ## Support and help
 
 -   Join Tachidesk's [discord server](https://discord.gg/DDZdqZWaHA) to hang out with the community and receive support and help.
@@ -159,6 +162,14 @@ Find other dependencies in [pubspec.yaml](pubspec.yaml)
 
 - CI-CD for `Tachidesk-Sorayomi` is developed by [@mahor1221](https://github.com/mahor1221) and contributors.
 
+## Translation
+Feel free to translate the project on [Weblate](https://hosted.weblate.org/projects/suwayomi/sorayomi/)
+
+<details><summary>Translation Progress</summary>
+<a href="https://hosted.weblate.org/engage/sorayomi/">
+<img src="https://hosted.weblate.org/widgets/suwayomi/-/sorayomi/multi-auto.svg" alt="Translation status" />
+</a>
+</details>
 
 ## License
 
