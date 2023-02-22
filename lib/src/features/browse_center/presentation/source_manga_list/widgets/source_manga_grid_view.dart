@@ -4,25 +4,27 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:infinite_scroll_pagination/infinite_scroll_pagination.dart';
 
 import '../../../../../constants/app_sizes.dart';
-import '../../../../../i18n/locale_keys.g.dart';
+
 import '../../../../../routes/router_config.dart';
+import '../../../../../utils/extensions/custom_extensions.dart';
 import '../../../../../widgets/emoticons.dart';
 import '../../../../../widgets/manga_cover/grid/manga_cover_grid_tile.dart';
 import '../../../../manga_book/domain/manga/manga_model.dart';
+import '../../../../settings/presentation/appearance/widgets/grid_cover_min_width.dart';
 import '../../../domain/source/source_model.dart';
 
-class SourceMangaGridView extends StatelessWidget {
+class SourceMangaGridView extends ConsumerWidget {
   const SourceMangaGridView({super.key, required this.controller, this.source});
   final PagingController<int, Manga> controller;
   final Source? source;
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     return PagedGridView(
       pagingController: controller,
       builderDelegate: PagedChildBuilderDelegate<Manga>(
@@ -30,19 +32,19 @@ class SourceMangaGridView extends StatelessWidget {
           text: controller.error.toString(),
           button: TextButton(
             onPressed: () => controller.refresh(),
-            child: Text(LocaleKeys.retry.tr()),
+            child: Text(context.l10n!.retry),
           ),
         ),
         noItemsFoundIndicatorBuilder: (context) => Emoticons(
-          text: LocaleKeys.noMangaFound.tr(),
+          text: context.l10n!.noMangaFound,
           button: TextButton(
             onPressed: () => controller.refresh(),
-            child: Text(LocaleKeys.refresh.tr()),
+            child: Text(context.l10n!.refresh),
           ),
         ),
         itemBuilder: (context, item, index) => MangaCoverGridTile(
           manga: item.copyWith(source: source),
-          showDarkOverlay: item.inLibrary ?? false,
+          showDarkOverlay: item.inLibrary.ifNull(),
           onPressed: () {
             if (item.id != null) {
               context.push(Routes.getManga(item.id!));
@@ -50,7 +52,7 @@ class SourceMangaGridView extends StatelessWidget {
           },
         ),
       ),
-      gridDelegate: mangaCoverGridDelegate,
+      gridDelegate: mangaCoverGridDelegate(ref.watch(gridMinWidthProvider)),
     );
   }
 }

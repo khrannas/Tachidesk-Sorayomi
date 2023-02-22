@@ -4,7 +4,6 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
@@ -12,11 +11,15 @@ import 'package:go_router/go_router.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 import '../../../../../constants/app_sizes.dart';
+import '../../../../../constants/db_keys.dart';
 import '../../../../../constants/enum.dart';
-import '../../../../../i18n/locale_keys.g.dart';
+
 import '../../../../../routes/router_config.dart';
 import '../../../../../utils/extensions/custom_extensions.dart';
+import '../../../../../utils/launch_url_in_web.dart';
+import '../../../../../utils/misc/toast/toast.dart';
 import '../../../../../widgets/radio_list_popup.dart';
+import '../../../../settings/presentation/reader/widgets/reader_padding_slider/reader_padding_slider.dart';
 import '../../../data/manga_book_repository.dart';
 import '../../../domain/chapter/chapter_model.dart';
 import '../../../domain/chapter_patch/chapter_put_model.dart';
@@ -41,6 +44,7 @@ class ReaderWrapper extends HookConsumerWidget {
     required this.currentIndex,
     required this.onNext,
     required this.onPrevious,
+    required this.scrollDirection,
   });
   final Widget child;
   final Manga manga;
@@ -49,6 +53,7 @@ class ReaderWrapper extends HookConsumerWidget {
   final VoidCallback onPrevious;
   final VoidCallback onNext;
   final int currentIndex;
+  final Axis scrollDirection;
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final prevNextChapterPair = ref.watch(
@@ -57,10 +62,13 @@ class ReaderWrapper extends HookConsumerWidget {
         chapterIndex: "${chapter.index}",
       ),
     );
+    final double localMangaReaderPadding =
+        ref.watch(readerPaddingKeyProvider) ?? DBKeys.readerPadding.initial;
     final visibility = useState(true);
-    final defaultReaderMode =
-        manga.meta?.readerMode ?? ReaderMode.defaultReader;
-    final defaultReaderNavigationLayout = manga.meta?.readerNavigationLayout ??
+    final mangaReaderPadding =
+        useState(manga.meta?.readerPadding ?? localMangaReaderPadding);
+    final mangaReaderMode = manga.meta?.readerMode ?? ReaderMode.defaultReader;
+    final mangaReaderNavigationLayout = manga.meta?.readerNavigationLayout ??
         ReaderNavigationLayout.defaultNavigation;
 
     final showReaderModePopup = useCallback(
@@ -68,8 +76,9 @@ class ReaderWrapper extends HookConsumerWidget {
         context: context,
         builder: (context) => RadioListPopup<ReaderMode>(
           optionList: ReaderMode.values,
-          value: defaultReaderMode,
-          title: LocaleKeys.readerMode.tr(),
+          optionDisplayName: (value) => value.toLocale(context),
+          value: mangaReaderMode,
+          title: context.l10n!.readerMode,
           onChange: (enumValue) async {
             if (context.mounted) context.pop();
             await AsyncValue.guard(
@@ -83,7 +92,7 @@ class ReaderWrapper extends HookConsumerWidget {
           },
         ),
       ),
-      [defaultReaderMode],
+      [mangaReaderMode],
     );
 
     final showReaderNavigationLayoutPopup = useCallback(
@@ -91,8 +100,9 @@ class ReaderWrapper extends HookConsumerWidget {
         context: context,
         builder: (context) => RadioListPopup<ReaderNavigationLayout>(
           optionList: ReaderNavigationLayout.values,
-          title: LocaleKeys.readerNavigationLayout.tr(),
-          value: defaultReaderNavigationLayout,
+          optionDisplayName: (value) => value.toLocale(context),
+          title: context.l10n!.readerNavigationLayout,
+          value: mangaReaderNavigationLayout,
           onChange: (enumValue) async {
             if (context.mounted) context.pop();
             await AsyncValue.guard(
@@ -108,22 +118,16 @@ class ReaderWrapper extends HookConsumerWidget {
           },
         ),
       ),
-      [defaultReaderNavigationLayout],
+      [mangaReaderNavigationLayout],
     );
 
     final quickSettings = Column(
       mainAxisSize: MainAxisSize.min,
       children: [
         ListTile(
-          leading: const Icon(
-            Icons.app_settings_alt_outlined,
-          ),
-          title: Text(
-            LocaleKeys.readerMode.tr(),
-          ),
-          subtitle: Text(
-            defaultReaderMode.toString().tr(),
-          ),
+          leading: const Icon(Icons.app_settings_alt_outlined),
+          title: Text(context.l10n!.readerMode),
+          subtitle: Text(mangaReaderMode.toLocale(context)),
           onTap: () {
             context.pop();
             showReaderModePopup();
@@ -134,14 +138,25 @@ class ReaderWrapper extends HookConsumerWidget {
             Icons.touch_app_rounded,
           ),
           title: Text(
-            LocaleKeys.readerNavigationLayout.tr(),
+            context.l10n!.readerNavigationLayout,
           ),
-          subtitle: Text(
-            defaultReaderNavigationLayout.toString().tr(),
-          ),
+          subtitle: Text(mangaReaderNavigationLayout.toLocale(context)),
           onTap: () {
             context.pop();
             showReaderNavigationLayoutPopup();
+          },
+        ),
+        AsyncReaderPaddingSlider(
+          readerPadding: mangaReaderPadding,
+          onChanged: (value) {
+            AsyncValue.guard(
+              () => ref.read(mangaBookRepositoryProvider).patchMangaMeta(
+                    mangaId: "${manga.id}",
+                    key: MangaMetaKeys.readerPadding.key,
+                    value: value,
+                  ),
+            );
+            ref.invalidate(mangaWithIdProvider(mangaId: "${manga.id}"));
           },
         ),
       ],
@@ -173,7 +188,20 @@ class ReaderWrapper extends HookConsumerWidget {
                 ),
                 elevation: 0,
                 backgroundColor: Colors.black.withOpacity(.7),
-                actions: const [SizedBox.shrink()],
+                actions: [
+                  chapter.realUrl.isBlank
+                      ? const SizedBox.shrink()
+                      : IconButton(
+                          onPressed: () async {
+                            launchUrlInWeb(
+                              context,
+                              (chapter.realUrl ?? ""),
+                              ref.read(toastProvider(context)),
+                            );
+                          },
+                          icon: const Icon(Icons.public),
+                        )
+                ],
               )
             : null,
         extendBodyBehindAppBar: true,
@@ -316,11 +344,23 @@ class ReaderWrapper extends HookConsumerWidget {
                 behavior: HitTestBehavior.translucent,
                 child: Stack(
                   children: [
-                    child,
+                    Padding(
+                      padding: EdgeInsets.symmetric(
+                        vertical: context.height *
+                            (scrollDirection != Axis.vertical
+                                ? mangaReaderPadding.value
+                                : 0),
+                        horizontal: context.width *
+                            (scrollDirection == Axis.vertical
+                                ? mangaReaderPadding.value
+                                : 0),
+                      ),
+                      child: child,
+                    ),
                     ReaderNavigationLayoutWidget(
                       onNext: onNext,
                       onPrevious: onPrevious,
-                      navigationLayout: defaultReaderNavigationLayout,
+                      navigationLayout: mangaReaderNavigationLayout,
                     ),
                   ],
                 ),

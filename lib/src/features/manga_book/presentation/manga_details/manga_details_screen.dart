@@ -4,14 +4,13 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:go_router/go_router.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 import '../../../../constants/app_sizes.dart';
-import '../../../../i18n/locale_keys.g.dart';
+
 import '../../../../routes/router_config.dart';
 import '../../../../utils/extensions/custom_extensions.dart';
 import '../../../../utils/misc/toast/toast.dart';
@@ -48,15 +47,12 @@ class MangaDetailsScreen extends HookConsumerWidget {
 
     final mangaRefresh = useCallback(([onlineFetch = false]) async {
       await ref.read(provider.notifier).refresh(onlineFetch);
-      if (categoryId != null) {
-        ref.invalidate(categoryMangaListProvider(categoryId!));
-      }
     }, []);
 
     final refresh = useCallback(([onlineFetch = false]) async {
       if (context.mounted && onlineFetch) {
         ref.read(toastProvider(context)).show(
-              LocaleKeys.updating.tr(),
+              context.l10n!.updating,
               withMicrotask: true,
             );
       }
@@ -64,7 +60,7 @@ class MangaDetailsScreen extends HookConsumerWidget {
       await ref.read(provider.notifier).refresh(onlineFetch);
       if (context.mounted && onlineFetch) {
         ref.read(toastProvider(context)).show(
-              LocaleKeys.updateCompleted.tr(),
+              context.l10n!.updateCompleted,
               withMicrotask: true,
             );
       }
@@ -75,174 +71,182 @@ class MangaDetailsScreen extends HookConsumerWidget {
       return;
     }, []);
 
-    return manga.showUiWhenData(
-      (data) => Scaffold(
-        appBar: selectedChapters.value.isNotEmpty
-            ? AppBar(
-                leading: IconButton(
-                  onPressed: () => selectedChapters.value = <int, Chapter>{},
-                  icon: const Icon(Icons.close_rounded),
-                ),
-                title: Text(
-                  LocaleKeys.numSelected.tr(
-                    namedArgs: {"num": "${selectedChapters.value.length}"},
+    return WillPopScope(
+      onWillPop: () async {
+        if (categoryId != null) {
+          ref.invalidate(categoryMangaListProvider(categoryId!));
+        }
+        return true;
+      },
+      child: manga.showUiWhenData(
+        context,
+        (data) => Scaffold(
+          appBar: selectedChapters.value.isNotEmpty
+              ? AppBar(
+                  leading: IconButton(
+                    onPressed: () => selectedChapters.value = <int, Chapter>{},
+                    icon: const Icon(Icons.close_rounded),
                   ),
-                ),
-                actions: [
-                  IconButton(
-                    onPressed: () {
-                      selectedChapters.value = {
-                        for (Chapter i in [
-                          ...?ref
-                              .read(
-                                mangaChapterListWithFilterProvider(
-                                    mangaId: mangaId),
-                              )
-                              .valueOrNull
-                        ])
-                          if (i.id != null) i.id!: i
-                      };
-                    },
-                    icon: const Icon(Icons.select_all_rounded),
+                  title: Text(
+                    context.l10n!.numSelected(selectedChapters.value.length),
                   ),
-                  IconButton(
-                    onPressed: () {
-                      final newMap = {
-                        for (Chapter i in [
-                          ...?ref
-                              .read(mangaChapterListWithFilterProvider(
-                                  mangaId: mangaId))
-                              .valueOrNull
-                        ])
-                          if (i.id != null &&
-                              !selectedChapters.value.containsKey(key))
-                            i.id!: i
-                      };
-                      selectedChapters.value = newMap;
-                    },
-                    icon: const Icon(Icons.flip_to_back_rounded),
-                  ),
-                ],
-              )
-            : AppBar(
-                title: Text(data?.title ?? LocaleKeys.manga.tr()),
-                actions: [
-                  if (context.isTablet)
+                  actions: [
                     IconButton(
-                      onPressed: () => refresh(true),
-                      icon: const Icon(Icons.refresh_rounded),
-                    ),
-                  Builder(
-                    builder: (context) => IconButton(
                       onPressed: () {
-                        if (context.isTablet) {
-                          Scaffold.of(context).openEndDrawer();
-                        } else {
-                          showModalBottomSheet(
-                            context: context,
-                            shape: RoundedRectangleBorder(
-                              borderRadius: KBorderRadius.rT16.radius,
-                            ),
-                            clipBehavior: Clip.hardEdge,
-                            builder: (_) => const MangaChapterOrganizer(),
-                          );
-                        }
+                        selectedChapters.value = {
+                          for (Chapter i in [
+                            ...?ref
+                                .read(
+                                  mangaChapterListWithFilterProvider(
+                                    mangaId: mangaId,
+                                  ),
+                                )
+                                .valueOrNull
+                          ])
+                            if (i.id != null) i.id!: i
+                        };
                       },
-                      icon: const Icon(Icons.filter_list_rounded),
+                      icon: const Icon(Icons.select_all_rounded),
                     ),
-                  ),
-                  PopupMenuButton(
-                    shape: RoundedRectangleBorder(
-                      borderRadius: KBorderRadius.r16.radius,
+                    IconButton(
+                      onPressed: () {
+                        final newMap = {
+                          for (Chapter i in [
+                            ...?ref
+                                .read(mangaChapterListWithFilterProvider(
+                                    mangaId: mangaId))
+                                .valueOrNull
+                          ])
+                            if (i.id != null &&
+                                !selectedChapters.value.containsKey(key))
+                              i.id!: i
+                        };
+                        selectedChapters.value = newMap;
+                      },
+                      icon: const Icon(Icons.flip_to_back_rounded),
                     ),
-                    icon: const Icon(Icons.more_vert_rounded),
-                    itemBuilder: (context) => [
-                      PopupMenuItem(
-                        onTap: () => Future.microtask(
-                          () => showDialog(
-                            context: context,
-                            builder: (context) =>
-                                EditMangaCategoryDialog(mangaId: mangaId),
-                          ),
-                        ),
-                        child: Text(LocaleKeys.editCategory.tr()),
+                  ],
+                )
+              : AppBar(
+                  title: Text(data?.title ?? context.l10n!.manga),
+                  actions: [
+                    if (context.isTablet)
+                      IconButton(
+                        onPressed: () => refresh(true),
+                        icon: const Icon(Icons.refresh_rounded),
                       ),
-                      if (!context.isTablet)
-                        PopupMenuItem(
-                          onTap: () => refresh(true),
-                          child: Text(LocaleKeys.refresh.tr()),
-                        ),
-                    ],
-                  )
-                ],
-              ),
-        endDrawer: const Drawer(
-          width: kDrawerWidth,
-          child: MangaChapterOrganizer(),
-        ),
-        bottomSheet: selectedChapters.value.isNotEmpty
-            ? MultiChaptersActionsBottomAppBar(
-                afterOptionSelected: () async =>
-                    ref.read(chapterListProvider.notifier).refresh(),
-                selectedChapters: selectedChapters,
-              )
-            : null,
-        floatingActionButton: firstUnreadChapter != null
-            ? FloatingActionButton.extended(
-                isExtended: context.isTablet,
-                label: Text(
-                  data?.lastChapterRead?.index != null
-                      ? LocaleKeys.resume.tr()
-                      : LocaleKeys.start.tr(),
-                ),
-                icon: const Icon(Icons.play_arrow_rounded),
-                onPressed: () {
-                  context.push(
-                    Routes.getReader(
-                      "${firstUnreadChapter.mangaId ?? mangaId}",
-                      "${firstUnreadChapter.index ?? 0}",
+                    Builder(
+                      builder: (context) => IconButton(
+                        onPressed: () {
+                          if (context.isTablet) {
+                            Scaffold.of(context).openEndDrawer();
+                          } else {
+                            showModalBottomSheet(
+                              context: context,
+                              shape: RoundedRectangleBorder(
+                                borderRadius: KBorderRadius.rT16.radius,
+                              ),
+                              clipBehavior: Clip.hardEdge,
+                              builder: (_) => const MangaChapterOrganizer(),
+                            );
+                          }
+                        },
+                        icon: const Icon(Icons.filter_list_rounded),
+                      ),
                     ),
-                  );
-                },
-              )
-            : null,
-        body: data != null
-            ? context.isTablet
-                ? BigScreenMangaDetails(
-                    chapterList: filteredChapterList,
-                    manga: data,
-                    mangaId: mangaId,
-                    onRefresh: refresh,
-                    onDescriptionRefresh: mangaRefresh,
-                    onListRefresh:
-                        ref.read(chapterListProvider.notifier).refresh,
-                    selectedChapters: selectedChapters,
-                  )
-                : SmallScreenMangaDetails(
-                    chapterList: filteredChapterList,
-                    manga: data,
-                    mangaId: mangaId,
-                    onRefresh: refresh,
-                    onDescriptionRefresh: mangaRefresh,
-                    onListRefresh:
-                        ref.read(chapterListProvider.notifier).refresh,
-                    selectedChapters: selectedChapters,
-                  )
-            : Emoticons(
-                text: LocaleKeys.noMangaFound.toString(),
-                button: TextButton(
-                  onPressed: refresh,
-                  child: Text(LocaleKeys.refresh.tr()),
+                    PopupMenuButton(
+                      shape: RoundedRectangleBorder(
+                        borderRadius: KBorderRadius.r16.radius,
+                      ),
+                      icon: const Icon(Icons.more_vert_rounded),
+                      itemBuilder: (context) => [
+                        PopupMenuItem(
+                          onTap: () => Future.microtask(
+                            () => showDialog(
+                              context: context,
+                              builder: (context) =>
+                                  EditMangaCategoryDialog(mangaId: mangaId),
+                            ),
+                          ),
+                          child: Text(context.l10n!.editCategory),
+                        ),
+                        if (!context.isTablet)
+                          PopupMenuItem(
+                            onTap: () => refresh(true),
+                            child: Text(context.l10n!.refresh),
+                          ),
+                      ],
+                    )
+                  ],
                 ),
-              ),
-      ),
-      refresh: refresh,
-      wrapper: (body) => Scaffold(
-        appBar: AppBar(
-          title: Text(LocaleKeys.manga.tr()),
-          centerTitle: true,
+          endDrawer: const Drawer(
+            width: kDrawerWidth,
+            child: MangaChapterOrganizer(),
+          ),
+          bottomSheet: selectedChapters.value.isNotEmpty
+              ? MultiChaptersActionsBottomAppBar(
+                  afterOptionSelected: () async =>
+                      ref.read(chapterListProvider.notifier).refresh(),
+                  selectedChapters: selectedChapters,
+                )
+              : null,
+          floatingActionButton: firstUnreadChapter != null
+              ? FloatingActionButton.extended(
+                  isExtended: context.isTablet,
+                  label: Text(
+                    data?.lastChapterRead?.index != null
+                        ? context.l10n!.resume
+                        : context.l10n!.start,
+                  ),
+                  icon: const Icon(Icons.play_arrow_rounded),
+                  onPressed: () {
+                    context.push(
+                      Routes.getReader(
+                        "${firstUnreadChapter.mangaId ?? mangaId}",
+                        "${firstUnreadChapter.index ?? 0}",
+                      ),
+                    );
+                  },
+                )
+              : null,
+          body: data != null
+              ? context.isTablet
+                  ? BigScreenMangaDetails(
+                      chapterList: filteredChapterList,
+                      manga: data,
+                      mangaId: mangaId,
+                      onRefresh: refresh,
+                      onDescriptionRefresh: mangaRefresh,
+                      onListRefresh:
+                          ref.read(chapterListProvider.notifier).refresh,
+                      selectedChapters: selectedChapters,
+                    )
+                  : SmallScreenMangaDetails(
+                      chapterList: filteredChapterList,
+                      manga: data,
+                      mangaId: mangaId,
+                      onRefresh: refresh,
+                      onDescriptionRefresh: mangaRefresh,
+                      onListRefresh:
+                          ref.read(chapterListProvider.notifier).refresh,
+                      selectedChapters: selectedChapters,
+                    )
+              : Emoticons(
+                  text: context.l10n!.noMangaFound,
+                  button: TextButton(
+                    onPressed: refresh,
+                    child: Text(context.l10n!.refresh),
+                  ),
+                ),
         ),
-        body: body,
+        refresh: refresh,
+        wrapper: (body) => Scaffold(
+          appBar: AppBar(
+            title: Text(context.l10n!.manga),
+            centerTitle: true,
+          ),
+          body: body,
+        ),
       ),
     );
   }

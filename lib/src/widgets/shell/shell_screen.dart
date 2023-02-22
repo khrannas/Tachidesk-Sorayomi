@@ -4,7 +4,6 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 
@@ -15,8 +14,7 @@ import 'package:pub_semver/pub_semver.dart';
 import '../../features/about/data/about_repository.dart';
 import '../../features/about/presentation/about/controllers/about_controller.dart';
 import '../../features/about/presentation/about/widget/app_update_dialog.dart';
-import '../../features/manga_book/widgets/update_status_fab.dart';
-import '../../i18n/locale_keys.g.dart';
+
 import '../../utils/extensions/custom_extensions.dart';
 import '../../utils/misc/toast/toast.dart';
 import 'big_screen_navigation_bar.dart';
@@ -41,7 +39,7 @@ class ShellScreen extends HookConsumerWidget {
         data: (version) {
           if (version != null) {
             appUpdateDialog(
-              title: title ?? LocaleKeys.appTitle.tr(),
+              title: title ?? context.l10n!.appTitle,
               newRelease: "v${version.canonicalizedVersion}",
               context: context,
               toast: toast,
@@ -79,7 +77,6 @@ class ShellScreen extends HookConsumerWidget {
           )
         : Scaffold(
             body: child,
-            floatingActionButton: const UpdateStatusFab(),
             floatingActionButtonLocation:
                 FloatingActionButtonLocation.centerFloat,
             bottomNavigationBar: SmallScreenNavigationBar(

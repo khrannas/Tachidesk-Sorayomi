@@ -4,13 +4,11 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:infinite_scroll_pagination/infinite_scroll_pagination.dart';
 
-import '../../../../i18n/locale_keys.g.dart';
 import '../../../../utils/extensions/custom_extensions.dart';
 import '../../../../utils/hooks/paging_controller_hook.dart';
 import '../../../../utils/misc/toast/toast.dart';
@@ -19,6 +17,7 @@ import '../../data/updates/updates_repository.dart';
 import '../../domain/chapter/chapter_model.dart';
 import '../../domain/chapter_page/chapter_page_model.dart';
 import '../../widgets/chapter_actions/multi_chapters_actions_bottom_app_bar.dart';
+import '../../widgets/update_status_fab.dart';
 import '../../widgets/update_status_popup_menu.dart';
 import '../reader/controller/reader_controller.dart';
 import 'widgets/chapter_manga_list_tile.dart';
@@ -38,7 +37,7 @@ class UpdatesScreen extends HookConsumerWidget {
         data: (recentChaptersPage) {
           try {
             if (recentChaptersPage != null) {
-              if (recentChaptersPage.hasNextPage ?? false) {
+              if (recentChaptersPage.hasNextPage.ifNull()) {
                 controller
                     .appendPage([...?recentChaptersPage.page], pageKey + 1);
               } else {
@@ -69,6 +68,7 @@ class UpdatesScreen extends HookConsumerWidget {
     }, []);
     final selectedChapters = useState<Map<int, Chapter>>({});
     return Scaffold(
+      floatingActionButton: const UpdateStatusFab(),
       appBar: selectedChapters.value.isNotEmpty
           ? AppBar(
               leading: IconButton(
@@ -76,13 +76,11 @@ class UpdatesScreen extends HookConsumerWidget {
                 icon: const Icon(Icons.close_rounded),
               ),
               title: Text(
-                LocaleKeys.numSelected.tr(
-                  namedArgs: {"num": "${selectedChapters.value.length}"},
-                ),
+                context.l10n!.numSelected(selectedChapters.value.length),
               ),
             )
           : AppBar(
-              title: Text(LocaleKeys.updates.tr()),
+              title: Text(context.l10n!.updates),
               actions: const [UpdateStatusPopupMenu()],
             ),
       bottomSheet: selectedChapters.value.isNotEmpty
@@ -103,14 +101,14 @@ class UpdatesScreen extends HookConsumerWidget {
               text: controller.error.toString(),
               button: TextButton(
                 onPressed: () => controller.refresh(),
-                child: Text(LocaleKeys.retry.tr()),
+                child: Text(context.l10n!.retry),
               ),
             ),
             noItemsFoundIndicatorBuilder: (context) => Emoticons(
-              text: LocaleKeys.noUpdatesFound.tr(),
+              text: context.l10n!.noUpdatesFound,
               button: TextButton(
                 onPressed: () => controller.refresh(),
-                child: Text(LocaleKeys.refresh.tr()),
+                child: Text(context.l10n!.refresh),
               ),
             ),
             itemBuilder: (context, item, index) {

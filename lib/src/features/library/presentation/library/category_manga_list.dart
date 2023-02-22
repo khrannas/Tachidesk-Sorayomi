@@ -4,7 +4,6 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:go_router/go_router.dart';
@@ -12,13 +11,15 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 import '../../../../constants/app_sizes.dart';
 import '../../../../constants/enum.dart';
-import '../../../../i18n/locale_keys.g.dart';
+
 import '../../../../routes/router_config.dart';
 import '../../../../utils/extensions/custom_extensions.dart';
 import '../../../../widgets/emoticons.dart';
 import '../../../../widgets/manga_cover/grid/manga_cover_grid_tile.dart';
 import '../../../../widgets/manga_cover/list/manga_cover_descriptive_list_tile.dart';
 import '../../../../widgets/manga_cover/list/manga_cover_list_tile.dart';
+import '../../../manga_book/presentation/manga_details/widgets/edit_manga_category_dialog.dart';
+import '../../../settings/presentation/appearance/widgets/grid_cover_min_width.dart';
 import 'controller/library_controller.dart';
 
 class CategoryMangaList extends HookConsumerWidget {
@@ -36,13 +37,14 @@ class CategoryMangaList extends HookConsumerWidget {
       return;
     }, []);
     return mangaList.showUiWhenData(
+      context,
       (data) {
         if (data.isBlank) {
           return Emoticons(
-            text: LocaleKeys.noCategoryMangaFound.tr(),
+            text: context.l10n!.noCategoryMangaFound,
             button: TextButton(
               onPressed: refresh,
-              child: Text(LocaleKeys.refresh.tr()),
+              child: Text(context.l10n!.refresh),
             ),
           );
         }
@@ -50,9 +52,22 @@ class CategoryMangaList extends HookConsumerWidget {
         switch (displayMode) {
           case DisplayMode.grid:
             mangaList = GridView.builder(
-              gridDelegate: mangaCoverGridDelegate,
+              gridDelegate:
+                  mangaCoverGridDelegate(ref.watch(gridMinWidthProvider)),
               itemCount: data?.length ?? 0,
               itemBuilder: (context, index) => MangaCoverGridTile(
+                onLongPress: () async {
+                  if (data[index].id != null) {
+                    await showDialog(
+                      context: context,
+                      builder: (context) => EditMangaCategoryDialog(
+                        mangaId: "${data[index].id}",
+                        title: data[index].title,
+                      ),
+                    );
+                    refresh();
+                  }
+                },
                 manga: data![index],
                 onPressed: () {
                   if (data[index].id != null) {
@@ -80,6 +95,18 @@ class CategoryMangaList extends HookConsumerWidget {
                     ));
                   }
                 },
+                onLongPress: () async {
+                  if (data[index].id != null) {
+                    await showDialog(
+                      context: context,
+                      builder: (context) => EditMangaCategoryDialog(
+                        mangaId: "${data[index].id}",
+                        title: data[index].title,
+                      ),
+                    );
+                    refresh();
+                  }
+                },
                 showCountBadges: true,
               ),
             );
@@ -95,6 +122,18 @@ class CategoryMangaList extends HookConsumerWidget {
                       data[index].id!,
                       categoryId: categoryId,
                     ));
+                  }
+                },
+                onLongPress: () async {
+                  if (data[index].id != null) {
+                    await showDialog(
+                      context: context,
+                      builder: (context) => EditMangaCategoryDialog(
+                        mangaId: "${data[index].id}",
+                        title: data[index].title,
+                      ),
+                    );
+                    refresh();
                   }
                 },
                 showBadges: true,

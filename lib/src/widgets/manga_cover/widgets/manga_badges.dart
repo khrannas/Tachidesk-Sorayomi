@@ -4,13 +4,12 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 import '../../../constants/app_sizes.dart';
 import '../../../features/manga_book/domain/manga/manga_model.dart';
-import '../../../i18n/locale_keys.g.dart';
+
 import '../../../utils/extensions/custom_extensions.dart';
 import '../providers/manga_cover_providers.dart';
 
@@ -28,19 +27,19 @@ class MangaBadgesRow extends ConsumerWidget {
   final EdgeInsetsGeometry? padding;
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final downloadedBadge = ref.watch(downloadedBadgeProvider) ?? true;
-    final unreadBadge = ref.watch(unreadBadgeProvider) ?? true;
-    // final languageBadge = ref.watch(languageBadgeProvider) ?? false;
+    final downloadedBadge = ref.watch(downloadedBadgeProvider).ifNull(true);
+    final unreadBadge = ref.watch(unreadBadgeProvider).ifNull(true);
+    // final languageBadge = ref.watch(languageBadgeProvider) .ifNull();
     return Padding(
       padding: padding ?? KEdgeInsets.a8.size,
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          if (!showCountBadges && (manga.inLibrary ?? false))
+          if (!showCountBadges && manga.inLibrary.ifNull())
             ClipRRect(
               borderRadius: KBorderRadius.r8.radius,
               child: MangaBadge(
-                text: LocaleKeys.inLibrary.tr(),
+                text: context.l10n!.inLibrary,
                 color: context.theme.colorScheme.primary,
                 textColor: context.theme.colorScheme.onPrimary,
               ),

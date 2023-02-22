@@ -65,8 +65,6 @@ jobs:
       - uses: actions/checkout@v3
       # - run: flutter create .
       - run: flutter pub get
-      - run: flutter pub run easy_localization:generate -S assets/locales -O lib/src/i18n
-      - run: flutter pub run easy_localization:generate -S assets/locales -f keys -O lib/src/i18n/ -o locale_keys.g.dart
 
       - name: Configure Keystore for Android
         if: matrix.target == 'android'
@@ -172,4 +170,14 @@ jobs:
         with:
           draft: false
           files: ${{ env.pkg_name }}*
+          token: ${{ secrets.WINGET }}
+
+  winget-publish:
+    needs: create-build
+    runs-on: windows-latest # action can only be run on windows
+    steps:
+      - uses: vedantmgoyal2009/winget-releaser@v2
+        with:
+          identifier: Suwayomi.Tachidesk-Sorayomi
+          version: ${{ github.ref_name }}
           token: ${{ secrets.WINGET }}

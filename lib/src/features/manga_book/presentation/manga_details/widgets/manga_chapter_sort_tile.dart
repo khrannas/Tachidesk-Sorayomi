@@ -4,11 +4,11 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 import '../../../../../constants/enum.dart';
+import '../../../../../utils/extensions/custom_extensions.dart';
 import '../../../../../widgets/sort_list_tile.dart';
 import '../controller/manga_details_controller.dart';
 
@@ -24,11 +24,11 @@ class MangaChapterSortTile extends ConsumerWidget {
     final sortedDirection = ref.watch(mangaChapterSortDirectionProvider);
     return SortListTile(
       selected: sortType == sortedBy,
-      title: Text(sortType.toString().tr()),
-      ascending: sortedDirection ?? true,
+      title: Text(sortType.toLocale(context)),
+      ascending: sortedDirection.ifNull(true),
       onChanged: (bool? value) => ref
           .read(mangaChapterSortDirectionProvider.notifier)
-          .update(!(sortedDirection ?? false)),
+          .update(!(sortedDirection.ifNull())),
       onSelected: () =>
           ref.read(mangaChapterSortProvider.notifier).update(sortType),
     );

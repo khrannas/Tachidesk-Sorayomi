@@ -4,13 +4,13 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 
-import '../../../../../i18n/locale_keys.g.dart';
+import '../../../../../constants/enum.dart';
+import '../../../../../utils/extensions/custom_extensions.dart';
 import 'library_manga_display.dart';
 import 'library_manga_filter.dart';
-import 'library_manga_sort.dart';
+import 'library_manga_sort_tile.dart';
 
 class LibraryMangaOrganizer extends StatelessWidget {
   const LibraryMangaOrganizer({
@@ -25,16 +25,21 @@ class LibraryMangaOrganizer extends StatelessWidget {
       child: Scaffold(
         appBar: TabBar(
           tabs: [
-            Tab(text: LocaleKeys.filter.tr()),
-            Tab(text: LocaleKeys.sort.tr()),
-            Tab(text: LocaleKeys.display.tr()),
+            Tab(text: context.l10n!.filter),
+            Tab(text: context.l10n!.sort),
+            Tab(text: context.l10n!.display),
           ],
         ),
-        body: const TabBarView(
+        body: TabBarView(
           children: [
-            LibraryMangaFilter(),
-            LibraryMangaSort(),
-            LibraryMangaDisplay(),
+            const LibraryMangaFilter(),
+            ListView(
+              children: [
+                for (MangaSort sortType in MangaSort.values)
+                  LibraryMangaSortTile(sortType: sortType),
+              ],
+            ),
+            const LibraryMangaDisplay(),
           ],
         ),
       ),

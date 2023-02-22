@@ -17,12 +17,14 @@ enum DBKeys {
   authType(AuthType.none),
   basicCredentials(null),
   readerMode(ReaderMode.webtoon),
+  readerPadding(0.0),
   readerNavigationLayout(ReaderNavigationLayout.disabled),
   invertTap(false),
   showNSFW(true),
   downloadedBadge(true),
   unreadBadge(true),
   languageBadge(false),
+  l10n(Locale('en')),
   mangaFilterDownloaded(null),
   mangaFilterUnread(null),
   mangaFilterCompleted(null),
@@ -35,6 +37,7 @@ enum DBKeys {
   chapterSortDirection(false), // asc=true, dsc=false
   libraryDisplayMode(DisplayMode.grid),
   sourceDisplayMode(DisplayMode.grid),
+  gridMangaCoverWidth(192.0),
   ;
 
   const DBKeys(this.initial);

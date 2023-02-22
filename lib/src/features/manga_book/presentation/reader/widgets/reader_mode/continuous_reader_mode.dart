@@ -4,8 +4,6 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-import 'package:easy_localization/easy_localization.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
@@ -13,7 +11,7 @@ import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
 import '../../../../../../constants/app_constants.dart';
 import '../../../../../../constants/app_sizes.dart';
 import '../../../../../../constants/endpoints.dart';
-import '../../../../../../i18n/locale_keys.g.dart';
+
 import '../../../../../../utils/extensions/custom_extensions.dart';
 import '../../../../../../widgets/server_image.dart';
 import '../../../../domain/chapter/chapter_model.dart';
@@ -34,7 +32,7 @@ class ContinuousReaderMode extends HookWidget {
   final Manga manga;
   final Chapter chapter;
   final bool showSeparator;
-  final AsyncValueSetter<int>? onPageChanged;
+  final ValueSetter<int>? onPageChanged;
   final Axis scrollDirection;
   final bool reverse;
   @override
@@ -70,6 +68,7 @@ class ContinuousReaderMode extends HookWidget {
       return () => positionsListener.itemPositions.removeListener(listener);
     }, []);
     return ReaderWrapper(
+      scrollDirection: scrollDirection,
       chapter: chapter,
       manga: manga,
       currentIndex: currentIndex.value,
@@ -126,8 +125,7 @@ class ContinuousReaderMode extends HookWidget {
                 mangaId: "${manga.id}",
                 pageIndex: index.toString(),
               ),
-              progressIndicatorBuilder: (context, url, downloadProgress) =>
-                  Center(
+              progressIndicatorBuilder: (_, __, downloadProgress) => Center(
                 child: CircularProgressIndicator(
                   value: downloadProgress.progress,
                 ),
@@ -142,21 +140,17 @@ class ContinuousReaderMode extends HookWidget {
                 child: child,
               ),
             );
-            if (index == 0 || index == (chapter.pageCount ?? 1)) {
+            if (index == 0 || index == (chapter.pageCount ?? 1) - 1) {
               final separator = SizedBox(
                 width: scrollDirection != Axis.vertical
                     ? context.width * .5
                     : null,
                 child: ChapterSeparator(
                   title: index == 0
-                      ? LocaleKeys.current.tr()
-                      : LocaleKeys.finished.tr(),
+                      ? context.l10n!.current
+                      : context.l10n!.finished,
                   name: chapter.name ??
-                      LocaleKeys.chapterNumber.tr(
-                        namedArgs: {
-                          'chapterNumber': "${chapter.chapterNumber ?? 0}"
-                        },
-                      ),
+                      context.l10n!.chapterNumber(chapter.chapterNumber ?? 0),
                 ),
               );
               final bool reverseDirection =

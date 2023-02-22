@@ -4,7 +4,6 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
@@ -12,11 +11,12 @@ import 'package:go_router/go_router.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 import '../../../../../constants/app_sizes.dart';
-import '../../../../../i18n/locale_keys.g.dart';
+
 import '../../../../../routes/router_config.dart';
 import '../../../../../utils/extensions/custom_extensions.dart';
 import '../../../../../utils/launch_url_in_web.dart';
 import '../../../../../utils/misc/toast/toast.dart';
+import '../../../../../widgets/async_buttons/async_text_button_icon.dart';
 import '../../../../../widgets/manga_cover/list/manga_cover_descriptive_list_tile.dart';
 import '../../../domain/manga/manga_model.dart';
 
@@ -49,10 +49,10 @@ class MangaDescription extends HookConsumerWidget {
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: [
-              TextButton.icon(
+              AsyncTextButtonIcon(
                 onPressed: () async {
                   final val = await AsyncValue.guard(() async {
-                    if (manga.inLibrary ?? false) {
+                    if (manga.inLibrary.ifNull()) {
                       await removeMangaFromLibrary();
                     } else {
                       await addMangaToLibrary();
@@ -63,32 +63,26 @@ class MangaDescription extends HookConsumerWidget {
                     val.showToastOnError(ref.read(toastProvider(context)));
                   }
                 },
-                icon: Icon(
-                  manga.inLibrary ?? false
-                      ? Icons.favorite_rounded
-                      : Icons.favorite_border_outlined,
-                ),
-                style: TextButton.styleFrom(
-                  foregroundColor:
-                      manga.inLibrary ?? false ? null : Colors.grey,
-                ),
-                label: Text(
-                  manga.inLibrary ?? false
-                      ? LocaleKeys.inLibrary.tr()
-                      : LocaleKeys.addToLibrary.tr(),
-                ),
+                isPrimary: manga.inLibrary.ifNull(),
+                primaryIcon: const Icon(Icons.favorite_rounded),
+                secondaryIcon: const Icon(Icons.favorite_border_outlined),
+                secondaryStyle:
+                    TextButton.styleFrom(foregroundColor: Colors.grey),
+                primaryLabel: Text(context.l10n!.inLibrary),
+                secondaryLabel: Text(context.l10n!.addToLibrary),
               ),
               if (manga.realUrl.isNotBlank)
                 TextButton.icon(
                   onPressed: () async {
                     launchUrlInWeb(
+                      context,
                       (manga.realUrl ?? ""),
                       ref.read(toastProvider(context)),
                     );
                   },
                   icon: const Icon(Icons.public),
                   style: TextButton.styleFrom(foregroundColor: Colors.grey),
-                  label: Text(LocaleKeys.webView.tr()),
+                  label: Text(context.l10n!.webView),
                 ),
             ],
           ),
