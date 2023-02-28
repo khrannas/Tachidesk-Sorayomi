@@ -7,6 +7,7 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cached_network_image_platform_interface/cached_network_image_platform_interface.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 import '../constants/endpoints.dart';
@@ -52,6 +53,8 @@ class ServerImage extends ConsumerWidget {
       imageRenderMethodForWeb: authType == AuthType.basic && basicToken != null
           ? ImageRenderMethodForWeb.HttpGet
           : ImageRenderMethodForWeb.HtmlImage,
+      cacheManager:
+          CacheManager(Config('libCachedImageData', maxNrOfCacheObjects: 500)),
       progressIndicatorBuilder: progressIndicatorBuilder == null
           ? null
           : (context, url, progress) => wrapper != null

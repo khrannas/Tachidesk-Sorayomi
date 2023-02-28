@@ -112,6 +112,7 @@ class ContinuousReaderMode extends HookWidget {
           scrollDirection: scrollDirection,
           reverse: reverse,
           itemCount: chapter.pageCount ?? 0,
+          minCacheExtent: (chapter.pageCount ?? 0) > 50 ? 10 : 0,
           separatorBuilder: (BuildContext context, int index) =>
               showSeparator ? KSizedBox.h16.size : const SizedBox.shrink(),
           itemBuilder: (BuildContext context, int index) {

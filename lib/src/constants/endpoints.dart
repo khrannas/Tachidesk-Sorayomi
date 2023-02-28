@@ -13,10 +13,10 @@ abstract class Endpoints {
       "${appendApiToUrl ? '/api/v1' : ''}";
 
   // receiveTimeout
-  static const Duration receiveTimeout = Duration(seconds: 20);
+  static const Duration receiveTimeout = Duration(seconds: 60);
 
   // connectTimeout
-  static const Duration connectionTimeout = Duration(seconds: 20);
+  static const Duration connectionTimeout = Duration(seconds: 60);
 }
 
 abstract class SettingsUrl {
