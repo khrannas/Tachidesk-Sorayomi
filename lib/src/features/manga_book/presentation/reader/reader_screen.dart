@@ -33,13 +33,14 @@ class ReaderScreen extends HookConsumerWidget {
   final String chapterIndex;
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final mangaProvider = mangaWithIdProvider(mangaId: mangaId);
-    final provider = chapterProvider(
-      mangaId: mangaId,
-      chapterIndex: chapterIndex,
-    );
+    final mangaProvider =
+        useMemoized(() => mangaWithIdProvider(mangaId: mangaId), []);
+    final chapterProviderWithIndex = useMemoized(
+        () => chapterProvider(mangaId: mangaId, chapterIndex: chapterIndex),
+        []);
+
     final manga = ref.watch(mangaProvider);
-    final chapter = ref.watch(provider);
+    final chapter = ref.watch(chapterProviderWithIndex);
     final defaultReaderMode = ref.watch(readerModeKeyProvider);
 
     final debounce = useRef<Timer?>(null);
@@ -87,7 +88,7 @@ class ReaderScreen extends HookConsumerWidget {
 
     return WillPopScope(
       onWillPop: () async {
-        ref.invalidate(provider);
+        ref.invalidate(chapterProviderWithIndex);
         ref.invalidate(mangaChapterListProvider(mangaId: mangaId));
         return true;
       },
@@ -181,7 +182,7 @@ class ReaderScreen extends HookConsumerWidget {
                     );
                 }
               },
-              refresh: () => ref.refresh(provider),
+              refresh: () => ref.refresh(chapterProviderWithIndex),
               addScaffoldWrapper: true,
             );
           },
