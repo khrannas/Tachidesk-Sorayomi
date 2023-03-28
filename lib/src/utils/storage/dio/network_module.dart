@@ -7,6 +7,8 @@
 import 'dart:convert';
 
 import 'package:dio/dio.dart';
+import 'package:dio_cache_interceptor/dio_cache_interceptor.dart';
+import 'package:dio_cache_interceptor_hive_store/dio_cache_interceptor_hive_store.dart';
 import 'package:flutter/foundation.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
@@ -25,8 +27,16 @@ class DioNetworkModule {
   Dio provideDio({
     required String baseUrl,
     required AuthType authType,
+    HiveCacheStore? hiveCacheStore,
     String? credentials,
   }) {
+    final cacheOptions = CacheOptions(
+      store: hiveCacheStore,
+      policy: CachePolicy.refreshForceCache,
+      hitCacheOnErrorExcept: [401, 403],
+      priority: CachePriority.normal,
+      maxStale: const Duration(days: 14),
+    );
     final dio = Dio();
     (dio.transformer as BackgroundTransformer).jsonDecodeCallback = parseJson;
 
@@ -36,6 +46,7 @@ class DioNetworkModule {
       ..options.receiveTimeout = Endpoints.receiveTimeout
       ..options.contentType = Headers.jsonContentType
       ..options.headers = {'Content-Type': 'application/json; charset=utf-8'}
+      ..interceptors.add(DioCacheInterceptor(options: cacheOptions))
       ..interceptors.add(
         InterceptorsWrapper(
           onRequest: (options, handler) {
@@ -47,7 +58,7 @@ class DioNetworkModule {
                 );
               } else {
                 if (kDebugMode) {
-                  print('credential is null');
+                  debugPrint('credential is null');
                 }
               }
             }
