@@ -107,8 +107,8 @@ class ReaderScreen extends HookConsumerWidget {
                   final CacheManager cacheManager = CacheManager(
                       Config('libCachedImageData', maxNrOfCacheObjects: 500));
                   final nextChapterProvider = chapterProvider(
-                    mangaId: "${data.id}",
-                    chapterIndex: "${chapterData.index! + 1}",
+                    mangaId: data.id!,
+                    chapterIndex: chapterData.index! + 1,
                   );
                   final nextChapter = ref.watch(nextChapterProvider);
 
@@ -117,9 +117,9 @@ class ReaderScreen extends HookConsumerWidget {
                       debugPrint("prefetch");
                       for (var i = 0; i < value!.pageCount!; i++) {
                         final imageUrl = MangaUrl.chapterPageWithIndex(
-                          chapterIndex: "${value.index}",
-                          mangaId: "${data.id}",
-                          pageIndex: "$i",
+                          chapterIndex: value.index!,
+                          mangaId: data.id!,
+                          pageIndex: i,
                         );
                         final baseApi =
                             "${Endpoints.baseApi(baseUrl: ref.watch(serverUrlProvider), appendApiToUrl: true)}"

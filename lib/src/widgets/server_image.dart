@@ -50,7 +50,6 @@ class ServerImage extends ConsumerWidget {
     return CachedNetworkImage(
       imageUrl: baseApi,
       height: size?.height,
-      cacheManager: DefaultCacheManager(),
       httpHeaders: authType == AuthType.basic && basicToken != null
           ? {"Authorization": basicToken}
           : null,
