@@ -176,8 +176,50 @@ jobs:
     needs: create-build
     runs-on: windows-latest # action can only be run on windows
     steps:
-      - uses: vedantmgoyal2009/winget-releaser@v2
+      - name: Update WINGET manifest
+        uses: vedantmgoyal2009/winget-releaser@v2
         with:
           identifier: Suwayomi.Tachidesk-Sorayomi
           version: ${{ github.ref_name }}
           token: ${{ secrets.WINGET }}
+
+  homebrew-cask-publish:
+    needs: create-build
+    runs-on: macos-latest
+    steps:
+      - name: Update Homebrew cask
+        uses: macauley/action-homebrew-bump-cask@v1
+        with:
+          token: ${{secrets.WINGET}}
+          tap: homebrew/homebrew-cask
+          cask: tachidesk-sorayomi
+          livecheck: true
+
+  aur-publish:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Install dependencies
+        run: sudo pacman -Syu --noconfirm git
+
+      - name: Clone AUR package
+        uses: actions/checkout@v2
+        with:
+          repository: aur.archlinux.org/tachidesk-sorayomi.git
+          ref: refs/heads/master
+
+      - name: Update version
+        run: sed -i "s/pkgver=.*/pkgver=${{github.ref_name}}/" PKGBUILD
+
+      - name: Commit changes
+        run: |
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+          git add PKGBUILD
+          git commit -m "Update version to ${{github.ref_name}}"
+
+      - name: Push changes
+        uses: ad-m/github-push-action@master
+        with:
+          github_token: ${{ secrets.WINGET }}
+          branch: master
