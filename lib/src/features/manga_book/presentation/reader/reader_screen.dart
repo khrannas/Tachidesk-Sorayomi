@@ -104,8 +104,9 @@ class ReaderScreen extends HookConsumerWidget {
 
                 //[TODO] add if prefetch next chapter
                 if (chapterData.index! < data.chapterCount!) {
-                  final CacheManager cacheManager = CacheManager(
-                      Config('libCachedImageData', maxNrOfCacheObjects: 500));
+                  final CacheManager cacheManager = useMemoized(() =>
+                      CacheManager(Config('libCachedImageData',
+                          maxNrOfCacheObjects: 500)));
                   final nextChapterProvider = chapterProvider(
                     mangaId: data.id!,
                     chapterIndex: chapterData.index! + 1,
