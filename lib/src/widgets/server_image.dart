@@ -59,7 +59,7 @@ class ServerImage extends ConsumerWidget {
           ? ImageRenderMethodForWeb.HttpGet
           : ImageRenderMethodForWeb.HtmlImage,
       cacheManager:
-          CacheManager(Config('libCachedImageData', maxNrOfCacheObjects: 500)),
+          CacheManager(Config('libCachedImageData', maxNrOfCacheObjects: 1000)),
       progressIndicatorBuilder: progressIndicatorBuilder == null
           ? null
           : (context, url, progress) => wrapper != null

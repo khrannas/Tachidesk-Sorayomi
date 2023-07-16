@@ -37,7 +37,9 @@ class SinglePageReaderMode extends HookConsumerWidget {
   final Axis scrollDirection;
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final cacheManager = useMemoized(() => DefaultCacheManager());
+    final cacheManager = useMemoized(() =>
+                      CacheManager(Config('libCachedImageData',
+                          maxNrOfCacheObjects: 1000)));
     final scrollController = usePageController(
       initialPage:
           chapter.read.ifNull() ? 0 : chapter.lastPageRead.ifNullOrNegative(),

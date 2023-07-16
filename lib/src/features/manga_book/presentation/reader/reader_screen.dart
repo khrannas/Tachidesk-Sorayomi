@@ -17,6 +17,7 @@ import '../../../../constants/enum.dart';
 import '../../../../features/settings/widgets/server_url_tile/server_url_tile.dart';
 import '../../../../utils/extensions/custom_extensions.dart';
 import '../../../settings/presentation/reader/widgets/reader_mode_tile/reader_mode_tile.dart';
+import '../../../../utils/extensions/cache_manager_extensions.dart';
 import '../../data/manga_book_repository.dart';
 import '../../domain/chapter_patch/chapter_put_model.dart';
 import '../manga_details/controller/manga_details_controller.dart';
@@ -114,7 +115,7 @@ class ReaderScreen extends HookConsumerWidget {
                 if (chapterData.index! < data.chapterCount!) {
                   final CacheManager cacheManager = useMemoized(() =>
                       CacheManager(Config('libCachedImageData',
-                          maxNrOfCacheObjects: 500)));
+                          maxNrOfCacheObjects: 1000)));
                   final nextChapterProvider = chapterProvider(
                     mangaId: data.id!,
                     chapterIndex: chapterData.index! + 1,
@@ -125,15 +126,14 @@ class ReaderScreen extends HookConsumerWidget {
                     (value) {
                       debugPrint("prefetch");
                       for (var i = 0; i < value!.pageCount!; i++) {
-                        final imageUrl = MangaUrl.chapterPageWithIndex(
-                          chapterIndex: value.index!,
-                          mangaId: data.id!,
-                          pageIndex: i,
+                        cacheManager.getServerFile(
+                          ref,
+                          MangaUrl.chapterPageWithIndex(
+                            chapterIndex: value.index!,
+                            mangaId: data.id!,
+                            pageIndex: i,
+                          ),
                         );
-                        final baseApi =
-                            "${Endpoints.baseApi(baseUrl: ref.watch(serverUrlProvider), appendApiToUrl: true)}"
-                            "$imageUrl/?useCache=true";
-                        cacheManager.getSingleFile(baseApi);
                       }
                     },
                   );

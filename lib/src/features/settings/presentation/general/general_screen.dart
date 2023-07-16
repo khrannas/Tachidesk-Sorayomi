@@ -48,7 +48,7 @@ class GeneralScreen extends ConsumerWidget {
             title: Text(context.l10n!.clearCache),
             onTap: () async {
               await ref.watch(hiveCacheStoreProvider).clean();
-              CacheManager(Config('libCachedImageData', maxNrOfCacheObjects: 500)).emptyCache();
+              CacheManager(Config('libCachedImageData', maxNrOfCacheObjects: 1000)).emptyCache();
               if (context.mounted) {
                 ref
                     .read(toastProvider(context))
