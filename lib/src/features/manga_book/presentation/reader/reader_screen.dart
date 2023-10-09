@@ -58,7 +58,7 @@ class ReaderScreen extends HookConsumerWidget {
       final isReadingCompeted = chapterValue != null &&
           ((chapterValue.read).ifNull() ||
               (currentPage >=
-                  ((chapterValue.pageCount).ifNullOrNegative() - 1)));
+                  ((chapterValue.pageCount).getValueOnNullOrNegative() - 1)));
       await AsyncValue.guard(
         () => ref.read(mangaBookRepositoryProvider).putChapter(
               mangaId: mangaId,
@@ -75,7 +75,7 @@ class ReaderScreen extends HookConsumerWidget {
       (int index) async {
         final chapterValue = chapter.valueOrNull;
         if ((chapterValue?.read).ifNull() ||
-            (chapterValue?.lastPageRead).ifNullOrNegative() >= index) {
+            (chapterValue?.lastPageRead).getValueOnNullOrNegative() >= index) {
           return;
         }
 
@@ -85,7 +85,8 @@ class ReaderScreen extends HookConsumerWidget {
         }
 
         if ((index >=
-            ((chapter.valueOrNull?.pageCount).ifNullOrNegative() - 1))) {
+            ((chapter.valueOrNull?.pageCount).getValueOnNullOrNegative() -
+                1))) {
           updateLastRead(index);
         } else {
           debounce.value = Timer(

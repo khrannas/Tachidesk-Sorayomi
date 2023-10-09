@@ -42,12 +42,14 @@ class ContinuousReaderMode extends HookConsumerWidget {
     final scrollController = useMemoized(() => ItemScrollController());
     final positionsListener = useMemoized(() => ItemPositionsListener.create());
     final currentIndex = useState(
-      chapter.read.ifNull() ? 0 : (chapter.lastPageRead).ifNullOrNegative(),
+      chapter.read.ifNull()
+          ? 0
+          : (chapter.lastPageRead).getValueOnNullOrNegative(),
     );
     useEffect(() {
       if (onPageChanged != null) onPageChanged!(currentIndex.value);
       return;
-    }, [currentIndex.value]);
+    }, [currentIndex]);
     useEffect(() {
       listener() {
         final positions = positionsListener.itemPositions.value.toList();
@@ -57,12 +59,12 @@ class ContinuousReaderMode extends HookConsumerWidget {
           final newPositions = positions.where((ItemPosition position) =>
               position.itemTrailingEdge.liesBetween());
           if (newPositions.isBlank) return;
-          currentIndex.value = newPositions
+          currentIndex.value = (newPositions
               .reduce((ItemPosition max, ItemPosition position) =>
                   position.itemTrailingEdge > max.itemTrailingEdge
                       ? position
                       : max)
-              .index;
+              .index);
         }
       }
 
@@ -118,8 +120,9 @@ class ContinuousReaderMode extends HookConsumerWidget {
       child: ScrollablePositionedList.separated(
         itemScrollController: scrollController,
         itemPositionsListener: positionsListener,
-        initialScrollIndex:
-            chapter.read.ifNull() ? 0 : chapter.lastPageRead.ifNullOrNegative(),
+        initialScrollIndex: chapter.read.ifNull()
+            ? 0
+            : chapter.lastPageRead.getValueOnNullOrNegative(),
         scrollDirection: scrollDirection,
         reverse: reverse,
         itemCount: chapter.pageCount ?? 0,
@@ -128,6 +131,7 @@ class ContinuousReaderMode extends HookConsumerWidget {
             showSeparator ? KSizedBox.h16.size : const SizedBox.shrink(),
         itemBuilder: (BuildContext context, int index) {
           final image = ServerImage(
+            showReloadButton: true,
             fit: scrollDirection == Axis.vertical
                 ? BoxFit.fitWidth
                 : BoxFit.fitHeight,

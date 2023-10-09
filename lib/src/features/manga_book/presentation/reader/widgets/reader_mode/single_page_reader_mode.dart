@@ -41,8 +41,9 @@ class SinglePageReaderMode extends HookConsumerWidget {
                       CacheManager(Config('libCachedImageData',
                           maxNrOfCacheObjects: 1000)));
     final scrollController = usePageController(
-      initialPage:
-          chapter.read.ifNull() ? 0 : chapter.lastPageRead.ifNullOrNegative(),
+      initialPage: chapter.read.ifNull()
+          ? 0
+          : chapter.lastPageRead.getValueOnNullOrNegative(),
     );
     final currentIndex = useState(scrollController.initialPage);
     useEffect(() {
@@ -60,7 +61,7 @@ class SinglePageReaderMode extends HookConsumerWidget {
         );
       }
       // Next page
-      if (currentPage < (chapter.pageCount.ifNullOrNegative() - 1)) {
+      if (currentPage < (chapter.pageCount.getValueOnNullOrNegative() - 1)) {
         cacheManager.getServerFile(
           ref,
           MangaUrl.chapterPageWithIndex(
@@ -71,7 +72,7 @@ class SinglePageReaderMode extends HookConsumerWidget {
         );
       }
       // 2nd next page
-      if (currentPage < (chapter.pageCount.ifNullOrNegative() - 2)) {
+      if (currentPage < (chapter.pageCount.getValueOnNullOrNegative() - 2)) {
         cacheManager.getServerFile(
           ref,
           MangaUrl.chapterPageWithIndex(
@@ -82,11 +83,11 @@ class SinglePageReaderMode extends HookConsumerWidget {
         );
       }
       return null;
-    }, [currentIndex.value]);
+    }, [currentIndex]);
     useEffect(() {
       listener() {
         final currentPage = scrollController.page;
-        if (currentPage != null) currentIndex.value = currentPage.toInt();
+        if (currentPage != null) currentIndex.value = (currentPage.toInt());
       }
 
       scrollController.addListener(listener);
@@ -114,6 +115,7 @@ class SinglePageReaderMode extends HookConsumerWidget {
         controller: scrollController,
         itemBuilder: (BuildContext context, int index) {
           final image = ServerImage(
+            showReloadButton: true,
             fit: BoxFit.contain,
             size: Size.fromHeight(context.height),
             appendApiToUrl: true,
@@ -129,7 +131,7 @@ class SinglePageReaderMode extends HookConsumerWidget {
           );
           return image;
         },
-        itemCount: chapter.pageCount.ifNullOrNegative(),
+        itemCount: chapter.pageCount.getValueOnNullOrNegative(),
       ),
     );
   }

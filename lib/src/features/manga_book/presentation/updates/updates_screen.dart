@@ -74,7 +74,7 @@ class UpdatesScreen extends HookConsumerWidget {
     useEffect(() {
       if (!isUpdatesChecking) {
         try {
-          selectedChapters.value = <int, Chapter>{};
+          selectedChapters.value = ({});
           controller.refresh();
         } catch (e) {
           //
@@ -83,11 +83,12 @@ class UpdatesScreen extends HookConsumerWidget {
       return null;
     }, [isUpdatesChecking]);
     return Scaffold(
-      floatingActionButton: const UpdateStatusFab(),
+      floatingActionButton:
+          selectedChapters.value.isEmpty ? const UpdateStatusFab() : null,
       appBar: selectedChapters.value.isNotEmpty
           ? AppBar(
               leading: IconButton(
-                onPressed: () => selectedChapters.value = <int, Chapter>{},
+                onPressed: () => selectedChapters.value = ({}),
                 icon: const Icon(Icons.close_rounded),
               ),
               title: Text(
@@ -107,7 +108,7 @@ class UpdatesScreen extends HookConsumerWidget {
           : null,
       body: RefreshIndicator(
         onRefresh: () async {
-          selectedChapters.value = <int, Chapter>{};
+          selectedChapters.value = ({});
           controller.refresh();
         },
         child: PagedListView(
@@ -165,7 +166,7 @@ class UpdatesScreen extends HookConsumerWidget {
                 toggleSelect: (Chapter val) {
                   if ((val.id).isNull) return;
                   selectedChapters.value =
-                      selectedChapters.value.toggleKey(val.id!, val);
+                      (selectedChapters.value.toggleKey(val.id!, val));
                 },
               );
               if ((item.chapter?.fetchedAt).isSameDayAs(previousDate)) {

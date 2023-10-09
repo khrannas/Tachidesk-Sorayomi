@@ -92,7 +92,7 @@ class ReaderWrapper extends HookConsumerWidget {
         context: context,
         builder: (context) => RadioListPopup<ReaderMode>(
           optionList: ReaderMode.values,
-          optionDisplayName: (value) => value.toLocale(context),
+          getOptionTitle: (value) => value.toLocale(context),
           value: mangaReaderMode,
           title: context.l10n!.readerMode,
           onChange: (enumValue) async {
@@ -116,7 +116,7 @@ class ReaderWrapper extends HookConsumerWidget {
         context: context,
         builder: (context) => RadioListPopup<ReaderNavigationLayout>(
           optionList: ReaderNavigationLayout.values,
-          optionDisplayName: (value) => value.toLocale(context),
+          getOptionTitle: (value) => value.toLocale(context),
           title: context.l10n!.readerNavigationLayout,
           value: mangaReaderNavigationLayout,
           onChange: (enumValue) async {
@@ -385,7 +385,7 @@ class ReaderWrapper extends HookConsumerWidget {
               ),
               HideQuickOpenIntent: CallbackAction<HideQuickOpenIntent>(
                 onInvoke: (HideQuickOpenIntent intent) {
-                  visibility.value = !visibility.value;
+                  visibility.value = (!visibility.value);
                   return null;
                 },
               ),
@@ -394,7 +394,8 @@ class ReaderWrapper extends HookConsumerWidget {
               autofocus: true,
               child: RepaintBoundary(
                 child: ReaderView(
-                  toggleVisibility: () => visibility.value = !visibility.value,
+                  toggleVisibility: () =>
+                      visibility.value = (!visibility.value),
                   scrollDirection: scrollDirection,
                   mangaReaderPadding: mangaReaderPadding.value,
                   mangaReaderMagnifierSize: mangaReaderMagnifierSize.value,
@@ -468,15 +469,15 @@ class ReaderView extends HookWidget {
       children: [
         GestureDetector(
           onLongPressStart: (details) {
-            dragGesturePosition.value = details.localPosition;
-            showMagnification.value = true;
+            dragGesturePosition.value = (details.localPosition);
+            showMagnification.value = (true);
           },
           onLongPressEnd: (details) {
-            dragGesturePosition.value = details.localPosition;
-            showMagnification.value = false;
+            dragGesturePosition.value = (details.localPosition);
+            showMagnification.value = (false);
           },
           onLongPressMoveUpdate: (details) =>
-              dragGesturePosition.value = details.localPosition,
+              dragGesturePosition.value = (details.localPosition),
           onTap: toggleVisibility,
           behavior: HitTestBehavior.translucent,
           onHorizontalDragEnd: (details) {
