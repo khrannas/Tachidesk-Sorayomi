@@ -130,7 +130,6 @@ class ReaderScreen extends HookConsumerWidget {
 
                   nextChapter.whenData(
                     (value) {
-                      debugPrint("prefetch");
                       for (var i = 0; i < value!.pageCount!; i++) {
                         cacheManager.getServerFile(
                           ref,
