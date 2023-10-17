@@ -74,7 +74,6 @@ class ContinuousReaderMode extends HookConsumerWidget {
                       : max)
               .index);
         }
-        if (onPageChanged != null) onPageChanged!(currentIndex.value);
       }
 
       positionsListener.itemPositions.addListener(listener);
