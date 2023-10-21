@@ -37,18 +37,9 @@ class ReaderScreen extends HookConsumerWidget {
   final bool showReaderLayoutAnimation;
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    useEffect(() {
-      SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersiveSticky);
-      return () => SystemChrome.setEnabledSystemUIMode(
-            SystemUiMode.manual,
-            overlays: SystemUiOverlay.values,
-          );
-    }, []);
-    final mangaProvider =
-        useMemoized(() => mangaWithIdProvider(mangaId: mangaId), []);
-    final chapterProviderWithIndex = useMemoized(
-        () => chapterProvider(mangaId: mangaId, chapterIndex: chapterIndex),
-        []);
+    final mangaProvider = mangaWithIdProvider(mangaId: mangaId);
+    final chapterProviderWithIndex =
+        chapterProvider(mangaId: mangaId, chapterIndex: chapterIndex);
 
     final manga = ref.watch(mangaProvider);
     final chapter = ref.watch(chapterProviderWithIndex);
@@ -100,6 +91,14 @@ class ReaderScreen extends HookConsumerWidget {
       },
       [chapter],
     );
+
+    useEffect(() {
+      SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersiveSticky);
+      return () => SystemChrome.setEnabledSystemUIMode(
+            SystemUiMode.manual,
+            overlays: SystemUiOverlay.values,
+          );
+    }, []);
 
     return WillPopScope(
       onWillPop: () async {
