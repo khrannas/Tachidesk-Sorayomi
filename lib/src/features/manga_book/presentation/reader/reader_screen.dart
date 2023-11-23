@@ -117,6 +117,34 @@ class ReaderScreen extends HookConsumerWidget {
                 context,
                 (chapterData) {
                   if (chapterData == null) return const SizedBox.shrink();
+
+                  //[TODO] add if prefetch next chapter
+                  if (chapterData.index! < data.chapterCount!) {
+                    final CacheManager cacheManager = useMemoized(() =>
+                        CacheManager(Config('libCachedImageData',
+                            maxNrOfCacheObjects: 1000)));
+                    final nextChapterProvider = chapterProvider(
+                      mangaId: data.id!,
+                      chapterIndex: chapterData.index! + 1,
+                    );
+                    final nextChapter = ref.watch(nextChapterProvider);
+
+                    nextChapter.whenData(
+                      (value) {
+                        for (var i = 0; i < value!.pageCount!; i++) {
+                          cacheManager.getServerFile(
+                            ref,
+                            MangaUrl.chapterPageWithIndex(
+                              chapterIndex: value.index!,
+                              mangaId: data.id!,
+                              pageIndex: i,
+                            ),
+                          );
+                        }
+                      },
+                    );
+                  }
+
                   return switch (data.meta?.readerMode ?? defaultReaderMode) {
                     ReaderMode.singleVertical => SinglePageReaderMode(
                         chapter: chapterData,
